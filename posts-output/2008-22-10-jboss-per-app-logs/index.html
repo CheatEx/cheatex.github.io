@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>cheatex: Раздельные логи приложений в JBoss</title>
+    <link rel="canonical" href="https://cheatex.github.io/posts-output/2008-22-10-jboss-per-app-logs/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700" rel="stylesheet"
+          type="text/css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css">
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">cheatex</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li ><a href="/">Home</a></li>
+                <li
+                ><a href="/archives/">Archives</a></li>
+                
+                <li
+                >
+                <a href="/pages-output/about/">About</a>
+                </li>
+                
+                <li><a href="/feed.xml">RSS</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+</nav>
+
+
+<div class="container">
+
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div id="content">
+                
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">October 10, 2009</div>
+        
+    </div>
+    <h2>Раздельные логи приложений в JBoss</h2>
+</div>
+<div>
+    
+    <p>Встала задача организовать раздельную запись логов для нескольких экземпляров одного и того-же приложения, запущенных на сервере(разделение экземпяров просто переименование war-ок). При этом дополнительно хотелось получить также: конфигурирование логов отдельно от самого сервера(читай не в серверном <code>jboss-log4j.xml</code>, а в собственном конфиге приложения, один экземпляр log4j как на диске, так и в памяти.</p><p>Простая упаковка конфига вместе с приложением успеха, как и ожидалось, не принесла. Если верить форумам/мэйллистам причина в том, что по умолчанию JBoss подкладывает приложениям свои библиотеки в класспат, соответственно приложения используют уже инициализированный экземпляр log4j.</p><p>Вторым этапом стала попытка использовать хак со слушателем контекста и установкой в нём <code>RepositorySelector</code> взятый <a href='http://docs.jboss.org/process-guide/en/html/logging.html'>тут</a>, раздел 10.3.8(что примечательно попал он мне на глаза сначала в каком-то блоге, а не в оф. доке). Работал он плохо: при переразвёртываниии приложения падала ошибка при инициализации JBoss log4j plugin. Думаю из за того, что при этом старый ClassLoader убивается и все созданные им классы вместе с ним. Заниматься дебагом сервера было немного лень, а сообщение обошибке было, мягко говоря, кратким.</p><p>В третий заход применил подход описанный <a href='http://docs.jboss.org/process-guide/en/html/logging.html'>там-же</a> в разделе 10.3.6. А именно: положил в папку <code>WEB-INF/lib</code> log4j и commons-logging(в своём приложении на всякий случай решил использовать его, а не напряму log4j), положил в папку <code>WEB-INF/classes</code> свой <code>log4j.xml</code> а также создал файлик <code>jboss-web.xml</code>(до этого обходился стандартным дескриптором) с содержимым, описанным в доке чуть ниже.</p><p>Потом ещё переучил оставшийся с прошлой попытки листенер записывать в системные свойства имена приложения(точнее контекста) и конфига(<code>log4j.xml</code>). (В спринге есть специальный, более одарённый листенер для этих целей, но спринга пока в проекте нет и связываться было лень.)</p><p>Commons-logging увидел старшого брата без дополнительных манипуляций.</p><p>Результат: аккуратненький набор папочек в <code>/log</code> сервера с подневными логами соответствующих приложений. Надо отметить, что это, между тем, не совсем нирвана ибо экземпляр log4j на каждое приложение - и память не по делу и место на диске... в эпоху гигабайтных планок не сильно проблемно, но всё-таки. Есть мнение, что если поглубже покопать в серверный класслоадинг (точнее хоть чуть-чуть копнуть, ибо то, что вписал в конфигурашку я понял приближённо) можно её и достичь...</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags-output/commong-logging/">commong-logging</a>
+    
+    <a href="/tags-output/java/">java</a>
+    
+    <a href="/tags-output/log4j/">log4j</a>
+    
+    <a href="/tags-output/jboss/">jboss</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts-output/2019-07-07-framework-evo/">&laquo; Эволюция фремворков</a>
+        
+        
+    </div>
+
+    
+
+
+</div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div id="sidebar">
+                <h3>Links</h3>
+                <ul id="links">
+                    <li><a href="https://github.com/CheatEx">GitHub</a></li>
+                    <li><a href="https://twitter.com/CheatEx">Twitter</a></li>
+                    <li><a href="https://t.me/real_code_expert">TG channel</a></li>
+                    <li><a href="http://programmers-path.blogspot.com/">Old blog</a></li>
+                    <li><a href="https://www.linkedin.com/in/alexey-zlobin">LI profile</a></li>
+                    
+                </ul>
+                
+                <div id="recent">
+                    <h3>Recent Posts</h3>
+                    <ul>
+                        
+                        <li><a href="/posts-output/2019-07-07-framework-evo/">Эволюция фремворков</a></li>
+                        
+                        <li><a href="/posts-output/2008-22-10-jboss-per-app-logs/">Раздельные логи приложений в JBoss</a></li>
+                        
+                    </ul>
+                </div>
+                
+                
+                <div id="tags">
+                    <h3>Tags</h3>
+                    <ul>
+                        
+                        <li><a href="/tags-output/java/">java</a></li>
+                        
+                        <li><a href="/tags-output/thoughts/">thoughts</a></li>
+                        
+                        <li><a href="/tags-output/commong-logging/">commong-logging</a></li>
+                        
+                        <li><a href="/tags-output/log4j/">log4j</a></li>
+                        
+                        <li><a href="/tags-output/jboss/">jboss</a></li>
+                        
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <footer>Copyright &copy; 2019 Alexey Zlobin
+        <p style="text-align: center;">Powered by <a href="http://cryogenweb.org">Cryogen</a></p></footer>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
