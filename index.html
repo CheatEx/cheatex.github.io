@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8"/>
     <title>cheatex</title>
-    <link rel="canonical" href="https://cheatex.github.io/">
+    <link rel="canonical" href="https://cheatex.github.io">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700" rel="stylesheet"
           type="text/css">
@@ -52,34 +52,54 @@
             <div id="content">
                 
 <div id="post">
+    
     <div class="post-header">
-    <div id="post-meta" class="row">
-        <div class="col-lg-6">July 7, 2019</div>
-        
+        <h2>Проблема с исключениями</h2>
+        <div id="post-meta">
+            
+            <div class="date">July 21, 2018</div>
+        </div>
     </div>
-    <h2>Эволюция фреймворков</h2>
-</div>
-<div>
+    <p>С исключениями есть одна большая проблема. В каждой команде которую мне довелось встречать было своё уникальное видение как их "правильно" применять.</p><p>Какие? Где кидать? Когда кидать? Где ловить? Все эти вопросы дают комбинаторный взрыв стилей и широкий простор для самовыражения. Каждый вариант ответа имеет свои фатальные недостатки, но их можно и проигнорировать для любимого набора. Носители альтернативного набора ответов обрекают всех окружающих на вечные муки и должны немедленно высылаться прямиком в ад. (Ну или в недельное кодревью хотя бы.)</p>
+    <a href="/posts-output/2018-07-21-on-exceptions/">Continue reading &#8594;</a>
+    <hr>
     
-    <p>Вначале была уютная джавочка с API для файлов-сокетов и интерфейсом в ODBC.</p><p>Потом решили что так программировать сложно и забахали пакет API для серверных приложений. Появилась куча аббревиатур которые до сих пор позволяют HRам писать вакансии не приходя в сознание.</p><p>Потом решили что собирать адаптеры и конвертеры между этими аббревиатурами руками сложно. Расцвела концепция inversion of control, появились контейнеры вроде спринга и guice.</p><p>Чтобы запуститься и на машине разраба и в тесте и собственно на сервере эти контейнерам требовалась куча конфигов. Расписывать их было не просто, "Правильно" запустить такую конструкцию получалось не у всякого. Пошли в дело оболочки для контейнеров вроде boot. На горизонте замаячил призрак совсем других контейнеров.</p><p>Успеть везде не возможно. И пока выкристаллизовывался верный способ завернуть перегонялку из таблички БД в JSON этих перегонялок для приличного приложения стало требоваться несколько сотен. И каждую надо "Правильно" оформить чтобы потраченные ранее усилия не пропали даром. Светлые умы быстренько подыскали выход: <a href='https://www.jhipster.tech/presentation/#/'>Java Hipster</a></p><p>Хочется собрать всех этих инноваторов и провести с ними воспитательную беседу примерно такого формата: <a href='https://www.youtube.com/watch?v=7n_1zsCVBxw&t=7'>https://www.youtube.com/watch?v=7n_1zsCVBxw&t=7</a> (Один из лучших гейм-артов, смотреть на самом большом экране что есть и сделать погромче)</p>
-</div>
-
-<div id="post-tags">
-    <b>Tags: </b>
+    <div class="post-header">
+        <h2>Эволюция фреймворков</h2>
+        <div id="post-meta">
+            
+            <div class="date">July 7, 2018</div>
+        </div>
+    </div>
+    <p>Вначале была уютная джавочка с API для файлов-сокетов и интерфейсом в ODBC.</p><p>Потом решили что так программировать сложно и забахали пакет API для серверных приложений. Появилась куча аббревиатур которые до сих пор позволяют HRам писать вакансии не приходя в сознание.</p>
+    <a href="/posts-output/2018-07-07-framework-evo/">Continue reading &#8594;</a>
+    <hr>
     
-    <a href="/tags-output/java/">java</a>
+    <div class="post-header">
+        <h2>Что интересно спросить у работодателя</h2>
+        <div id="post-meta">
+            
+            <div class="date">February 25, 2010</div>
+        </div>
+    </div>
+    <h3 id="анализ,_общение_с_пользователями">Анализ, общение с пользователями</h3><ul><li>Откуда берутся требования?<ul><li>Как оценивается их выполнение?</li></ul></li><li>Требования пересматриваются?<ul><li>По каким причинам?</li></ul></li><li>Как часто пользователь получает результаты работы?</li><li>Участвуют ли пользователи и эксперты в разработке?<ul><li>В каких формах?</li></ul></li><li>Что предпринимается в случае выявления противоречивости требований?</li></ul>
+    <a href="/posts-output/2010-02-25-what-to-ask/">Continue reading &#8594;</a>
+    <hr>
     
-    <a href="/tags-output/thoughts/">thoughts</a>
-    
-</div>
-
-
+    <div class="post-header">
+        <h2>Раздельные логи приложений в JBoss</h2>
+        <div id="post-meta">
+            
+            <div class="date">October 22, 2008</div>
+        </div>
+    </div>
+    <p>Встала задача организовать раздельную запись логов для нескольких экземпляров одного и того-же приложения, запущенных на сервере(разделение экземпяров просто переименование war-ок). При этом дополнительно хотелось получить также: конфигурирование логов отдельно от самого сервера(читай не в серверном <code>jboss-log4j.xml</code>, а в собственном конфиге приложения, один экземпляр log4j как на диске, так и в памяти.</p><p>Простая упаковка конфига вместе с приложением успеха, как и ожидалось, не принесла. Если верить форумам/мэйллистам причина в том, что по умолчанию JBoss подкладывает приложениям свои библиотеки в класспат, соответственно приложения используют уже инициализированный экземпляр log4j.</p>
+    <a href="/posts-output/2008-10-22-jboss-per-app-logs/">Continue reading &#8594;</a>
+    <hr>
     
 
     <div id="prev-next">
         
-        
-        <a class="right" href="/posts-output/2008-22-10-jboss-per-app-logs/">Раздельные логи приложений в JBoss &raquo;</a>
         
     </div>
 </div>
@@ -103,9 +123,11 @@
                     <h3>Recent Posts</h3>
                     <ul>
                         
-                        <li><a href="/posts-output/2019-07-07-framework-evo/">Эволюция фреймворков</a></li>
+                        <li><a href="/posts-output/2018-07-21-on-exceptions/">Проблема с исключениями</a></li>
                         
-                        <li><a href="/posts-output/2008-22-10-jboss-per-app-logs/">Раздельные логи приложений в JBoss</a></li>
+                        <li><a href="/posts-output/2018-07-07-framework-evo/">Эволюция фреймворков</a></li>
+                        
+                        <li><a href="/posts-output/2010-02-25-what-to-ask/">Что интересно спросить у работодателя</a></li>
                         
                     </ul>
                 </div>
@@ -115,15 +137,25 @@
                     <h3>Tags</h3>
                     <ul>
                         
-                        <li><a href="/tags-output/java/">java</a></li>
-                        
-                        <li><a href="/tags-output/thoughts/">thoughts</a></li>
+                        <li><a href="/tags-output/technology/">technology</a></li>
                         
                         <li><a href="/tags-output/commong-logging/">commong-logging</a></li>
+                        
+                        <li><a href="/tags-output/process/">process</a></li>
+                        
+                        <li><a href="/tags-output/java/">java</a></li>
                         
                         <li><a href="/tags-output/log4j/">log4j</a></li>
                         
                         <li><a href="/tags-output/jboss/">jboss</a></li>
+                        
+                        <li><a href="/tags-output/excetions/">excetions</a></li>
+                        
+                        <li><a href="/tags-output/error-handling/">error-handling</a></li>
+                        
+                        <li><a href="/tags-output/interviews/">interviews</a></li>
+                        
+                        <li><a href="/tags-output/thoughts/">thoughts</a></li>
                         
                     </ul>
                 </div>
