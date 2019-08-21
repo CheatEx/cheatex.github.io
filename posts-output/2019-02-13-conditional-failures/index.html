@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>cheatex: Странный гайд по исключениям от гуавы</title>
+    <link rel="canonical" href="https://cheatex.github.io/posts-output/2019-02-13-conditional-failures/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700" rel="stylesheet"
+          type="text/css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css">
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">cheatex</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li ><a href="/">Home</a></li>
+                <li
+                ><a href="/archives/">Archives</a></li>
+                
+                <li
+                >
+                <a href="/pages-output/about/">About</a>
+                </li>
+                
+                <li><a href="/feed.xml">RSS</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+</nav>
+
+
+<div class="container">
+
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div id="content">
+                
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">February 13, 2019</div>
+        
+    </div>
+    <h2>Странный гайд по исключениям от гуавы</h2>
+</div>
+<div>
+    
+    <p>Наткнулся тут на <a href='https://github.com/google/guava/wiki/ConditionalFailuresExplained'>гайд по пользованию исключениями в Guava</a>, и видимо в джавовских проектах гугла.</p><p>Первое что бросается в глаза Rationale пропущен. Второе - 6 вариантов ответа для фундаментального вопроса это реально дохера. Если вчитаться тоже есть вопросы.</p><p>Мне показалось что основная проблема которая решается применением этой конвенции - поиск виноватых. Краткое изложение в табличке целиком про кто "messed up".</p><p>Не понятно зачем сюда втянут exceptional result. Типа контракт штуки такой, ожидаемое поведение. Test assertion его частный случай, ничего требующего выделения отдельного пункта не сказано. Дальше в табличке предлагают <code>AssertionError</code> для него, видиом чтобы по ошибке не ловить падение теста вместо своего исключения. Но это стоило прояснять явно и в формате примечания к exceptional result.</p><p><i>Precondition</i> check важный частный случай, всё-таки это ситуация когда у кода нет в принципе возможности сделать задуманое. Можно согласиться.</p><p><i>Assertion</i> - понятно, поддерживаю.</p><p><i>Verification check</i> пункт про поиск виноватых и пинг-понг. Никакой разницы почему вмерло нет, нарушено ожидание, действуем по плану assertion. А тут добавлен отдельный пункт и класс с утилитами под него.</p><p><i>Impossible-condition</i> check вообще не понимаю зачем нужен, всё еще assertion.</p><p>В этой системе есть проблема: легко ловить что-то тебе не предназначенное. Если есть контракты с исключениями то в код который их использует может приехать и <i>precondition check</i> и <i>verification check</i>. Чтобы работало ко всей конструкции надо еще добавлять правило в духе "не ловим <code>Exception</code> и <code>RuntimeException</code> в прикладном коде". И правило какой код уже можно считать системным. А потом еще правило про catch который на самом деле finally. Ну вы поняли.</p><p>Вывод: там тоже всё плохо. На Java надо писать без ошибок или не писать вообще.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags-output/TG repost/">TG repost</a>
+    
+    <a href="/tags-output/java/">java</a>
+    
+    <a href="/tags-output/exceptions/">exceptions</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts-output/2019-02-27-fire-and-motion-2019/">&laquo; Fire and motion 2019</a>
+        
+        
+        <a class="right" href="/posts-output/2018-12-26-on-vs-code/">Про VS Code &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div id="sidebar">
+                <h3>Links</h3>
+                <ul id="links">
+                    <li><a href="https://github.com/CheatEx">GitHub</a></li>
+                    <li><a href="https://twitter.com/CheatEx">Twitter</a></li>
+                    <li><a href="https://t.me/real_code_expert">TG channel</a></li>
+                    <li><a href="http://programmers-path.blogspot.com/">Old blog</a></li>
+                    <li><a href="https://www.linkedin.com/in/alexey-zlobin">LI profile</a></li>
+                    
+                </ul>
+                
+                <div id="recent">
+                    <h3>Recent Posts</h3>
+                    <ul>
+                        
+                        <li><a href="/posts-output/2019-06-03-elements-of-programming/">Начала программирования</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-27-web-improved/">The HTML we shouldn&#39;t ever have</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-23-on-interviews/">Про интервью</a></li>
+                        
+                    </ul>
+                </div>
+                
+                
+                <div id="tags">
+                    <h3>Tags</h3>
+                    <ul>
+                        
+                        <li><a href="/tags-output/books/">books</a></li>
+                        
+                        <li><a href="/tags-output/technology/">technology</a></li>
+                        
+                        <li><a href="/tags-output/scala/">scala</a></li>
+                        
+                        <li><a href="/tags-output/clojure/">clojure</a></li>
+                        
+                        <li><a href="/tags-output/web/">web</a></li>
+                        
+                        <li><a href="/tags-output/vscode/">vscode</a></li>
+                        
+                        <li><a href="/tags-output/commong-logging/">commong-logging</a></li>
+                        
+                        <li><a href="/tags-output/process/">process</a></li>
+                        
+                        <li><a href="/tags-output/TG repost/">TG repost</a></li>
+                        
+                        <li><a href="/tags-output/java/">java</a></li>
+                        
+                        <li><a href="/tags-output/HR/">HR</a></li>
+                        
+                        <li><a href="/tags-output/log4j/">log4j</a></li>
+                        
+                        <li><a href="/tags-output/jboss/">jboss</a></li>
+                        
+                        <li><a href="/tags-output/excetions/">excetions</a></li>
+                        
+                        <li><a href="/tags-output/error-handling/">error-handling</a></li>
+                        
+                        <li><a href="/tags-output/exceptions/">exceptions</a></li>
+                        
+                        <li><a href="/tags-output/interviews/">interviews</a></li>
+                        
+                        <li><a href="/tags-output/thoughts/">thoughts</a></li>
+                        
+                    </ul>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <footer>Copyright &copy; 2019 Alexey Zlobin
+        <p style="text-align: center;">Powered by <a href="http://cryogenweb.org">Cryogen</a></p></footer>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
