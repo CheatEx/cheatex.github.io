@@ -64,6 +64,16 @@ body {
     margin-top: 50px;
 }
 
+.tag-block {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+}
+
+.tag-block a {
+    margin: 0px 6px;
+}
+
 #content {
     background-color: #fff;
     border-radius: 3px;
