@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>cheatex: Что не так с Хаскелем</title>
+    <link rel="canonical" href="https://cheatex.cc/posts-output/2014-06-19-whats-wrong-with-haskell/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700" rel="stylesheet"
+          type="text/css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css">
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">cheatex</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li ><a href="/">Home</a></li>
+                <li
+                ><a href="/archives/">Archives</a></li>
+                
+                <li><a href="/feed.xml">RSS</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+</nav>
+
+
+<div class="container">
+
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div id="content">
+                
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">June 19, 2014</div>
+        
+    </div>
+    <h2>Что не так с Хаскелем</h2>
+</div>
+<div>
+    
+    <p>Недавно тут <a href='http://eax.me/eaxcast-s02e02/'>вспомнилась</a> забавная статья <a href='http://habrahabr.ru/post/163283/'>"Почему язык Haskell так непопулярен"</a> <a href='https://savepearlharbor.com/?p=163283'>alt</a> от одного из вождей соответствующего сообщества. Понял что со времён её публикации мой ответ на заголовок изменился с абстрактного "нихрена не понял" на список из нескольких достаточно конкретных проблем. Их я и попробую тут расписать.</p><p>Во-первых нет учебников и справочников по алгоритмам/структурам данных. Большая часть алгоритмов описана в расчёте на дешёвое присваивание и строгие вычисления. Найти описание и анализ нетривиального алгоритма для хаскельных реалий практически не возможно. У того же Окасаки, как я понимаю, половина книги - разработка аппарата для того чтобы только научиться иметь с этим дело.</p><p>К предыдущей плотно примыкает проблема номер два. Ленивые вычисления - это фактически полная передача компилятору баланса между потреблением памяти и процессора. Иногда он сдвигает его в совершенно неожиданное место и программа вдруг начинает требовать феерические объёмы ресурсов. Что с этим делать непонятно, гайды которые мне удавалось находить написаны для разрабов этого самого компилятора. В них в принципе нет введений, даже нет ссылок, предполагается что огромная масса знаний о реализации вычислительной модели уже в голове. Что делать человеку который прочитал LYHGG, написал первый алгоритм и получил время выполнение или потребление памяти в районе лунной орбиты непонятно.</p><p>Лирическое отступление. Пару лет назад я проходил на курсере курс по алгоритмам. Начать попробовал на хаскеле. Первым заданием было посчитать inversions, то есть нарушения порядка в массиве. Решение я написал сравнительно быстро, мин 40. Проблемы начались при запуске - программа пожирала всю доступную память. Несколько ритуальных плясок в обходе списка позволили программе вмещаться в пару гигабайт памяти и 20 минут. И да, выдавать <a href='https://twitter.com/puffnfresh'>корректный</a> ответ для пары тысяч чисел в первой версии, спустя полтора часа...</p><p>Обзор тематических ресурсов подходы к решению проблемы найти не позволил. Консультация с коллегой-фаном хаскеля, который кстати тоже получил что-то не вменяемое в первой версии программы, и перестановка чего-то там в паре выражений (перед глазами встал призрак 2003 студии где перестановка инклудов иногда чинила access violation)  позволили сократить время до нескольких минут. Для интереса сделал тоже на питоне за 10 мин, 20 или 30 секунд выполнения и символическое потребление памяти. Искать с помощью Хаскеля минимальный разрез графа из нескольких тысяч узлов я уже не рискнул.</p><p>Ну и главное: нет примеров полномасштабных приложений. Какая нибудь обработка исключений от трёх функций с помощью стрелок находится легко. Исходник простого веб-сервера, без расширений языка, без 90% закопанного в библиотеки найти сложно. Хотелось бы увидеть простой аналог рисовалки или текстового редактора. Что угодно что демонстрирует в рамках 3-4 экранов дизайн полноценного приложения которое читает, пишет, показывает что-то пользователю, реагирует на ошибки и нарушения форматов. Таких примеров нет, невозможно оценить какой массив знаний необходим для создания полноценного приложения. Теркат? Трансформеры? Дисер Окасаки? Свободная навигация по исходникам компилятора? Я за три года так и не понял.</p><p>Ещё для меня серьёзной проблемой является типографический кретинизм большинства авторов. Он проявляется в нескольких аспектах. Во-первых для функции нормально <a href='http://stackoverflow.com/questions/7746894/are-there-pronounceable-names-for-common-haskell-operators'>не иметь человеческого имени</a>. Пишем <*>, в уме проговариваем "треугольная жопа", как описать код коллеге не понятно. Во-вторых статьи абсолютно всех уровней, от ICFP до очередного тьюториала по монадам в блоге программиста Васи наполнены типографскими аналогами собственно операторов языка, то есть вместо -> везде →. Какая-нибудь тау с нижним и верхним индексом - тоже святое дело. Вообще обучение на примере кода который не запускается - норма для данного сообщества. В том же LYHGG процентов 30 не работало ещё три года назад когда я его читал.</p><p>Ну и сообщество. Я там выше давал ссылочку на любителя корректных программ, подпишитесь - понаблюдайте недельку. Подумайте что делать если к такому существу придётся обращаться за поддержкой или оно окажется у вас в команде. Справедливости ради надо заметить что те кто собственно что-то делает, разработчики самого компилятора и популярных билиотек более вменяемы и не лишены кругозора.</p><p>Чуть не забыл, данная заметка не претендует на полный охват предмета. Haskell имеет некоторое (конечное) количество положительных черт, но я тут про них умолчал. Жаждущие серебряных пуль могут найти их в интернете во множестве.</p><p>UPD: Буду сюда докидывать пруфы</p><ul><li><a href='http://www.haskell.org/pipermail/haskell-cafe/2014-June/114724.html'>Need help - my haskell code is over 50 times slower than equivalent perl implementation</a></li><li><a href='https://codeflow.wordpress.com/2011/02/20/the-reasons-i-dont-write-all-my-code-in-haskell/'>The reasons I don’t write all my code in Haskell</a></li><li><a href='http://ru.reddit.com/r/haskell/comments/2a310v/where_is_haskell_going_in_industry/'>Where is Haskell going in industry?</a></li><li><a href='http://ru.reddit.com/r/haskell/comments/2aerm7/whats_the_performance_bottleneck_in_this_prime/'>What's the performance bottleneck in this prime sieve function?</a></li><li><a href='http://ru.reddit.com/r/haskell/comments/2ain3c/beginner_parse_error_on_input/'>Beginner - Parse Error on Input '='</a></li><li><a href='http://ru.reddit.com/r/haskell/comments/2al3vx/how_do_you_avoid_the_cabal_hell/'>How do you avoid the Cabal Hell™?</a> (третий пункт прекрасен, изящный функциональный дизайн типа)</li><li><a href='http://ru.reddit.com/r/haskell/comments/2ali12/complete_roadmap_from_total_novice_to_haskell/'>Complete roadmap from total novice to Haskell mastery?</a></li><li><a href='http://www.reddit.com/r/haskell/comments/2fxjcg/how_do_you_structure_a_program_to_support_logging/'>How do you structure a program to support logging?</a></li><li><a href='http://www.reddit.com/r/haskell/comments/2n0991/how_lazy_evaluation_works/cm9qx7v'>Why is foldl bad?</a></li></ul>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags-output/haskell/">haskell</a>
+    
+    <a href="/tags-output/languages/">languages</a>
+    
+    <a href="/tags-output/thoughts/">thoughts</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts-output/2014-08-04-cg-books/">&laquo; &quot;Mathematics for Computer Graphics&quot; и &quot;Computational Geometry: Algorithms and Applications&quot;</a>
+        
+        
+        <a class="right" href="/posts-output/2014-05-26-untypical-ides/">Нетипичные IDE &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div id="sidebar">
+                
+                <div id="recent">
+                    <h3>Recent Posts</h3>
+                    <ul>
+                        
+                        <li><a href="/posts-output/2019-08-23-understanding-computation/">Understanding computation</a></li>
+                        
+                        <li><a href="/posts-output/2019-06-03-elements-of-programming/">Начала программирования</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-27-web-improved/">The HTML we shouldn&#39;t ever have</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-23-on-interviews/">Про интервью</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-27-fire-and-motion-2019/">Fire and motion 2019</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-13-conditional-failures/">Странный гайд по исключениям от гуавы</a></li>
+                        
+                    </ul>
+                </div>
+                
+                
+                <div id="tags">
+                    <h3>Tags</h3>
+                    <div class="tag-block">
+                    
+                    <a href="/tags-output/books/">books</a>
+                    
+                    <a href="/tags-output/technology/">technology</a>
+                    
+                    <a href="/tags-output/scala/">scala</a>
+                    
+                    <a href="/tags-output/clojure/">clojure</a>
+                    
+                    <a href="/tags-output/web/">web</a>
+                    
+                    <a href="/tags-output/vscode/">vscode</a>
+                    
+                    <a href="/tags-output/process/">process</a>
+                    
+                    <a href="/tags-output/management/">management</a>
+                    
+                    <a href="/tags-output/TG repost/">TG repost</a>
+                    
+                    <a href="/tags-output/commons-logging/">commons-logging</a>
+                    
+                    <a href="/tags-output/java/">java</a>
+                    
+                    <a href="/tags-output/HR/">HR</a>
+                    
+                    <a href="/tags-output/haskell/">haskell</a>
+                    
+                    <a href="/tags-output/racket/">racket</a>
+                    
+                    <a href="/tags-output/log4j/">log4j</a>
+                    
+                    <a href="/tags-output/task management/">task management</a>
+                    
+                    <a href="/tags-output/languages/">languages</a>
+                    
+                    <a href="/tags-output/jboss/">jboss</a>
+                    
+                    <a href="/tags-output/links/">links</a>
+                    
+                    <a href="/tags-output/planning/">planning</a>
+                    
+                    <a href="/tags-output/sublime/">sublime</a>
+                    
+                    <a href="/tags-output/excetions/">excetions</a>
+                    
+                    <a href="/tags-output/lisp/">lisp</a>
+                    
+                    <a href="/tags-output/error-handling/">error-handling</a>
+                    
+                    <a href="/tags-output/ide/">ide</a>
+                    
+                    <a href="/tags-output/exceptions/">exceptions</a>
+                    
+                    <a href="/tags-output/interviews/">interviews</a>
+                    
+                    <a href="/tags-output/thoughts/">thoughts</a>
+                    
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <footer>Copyright &copy; 2019 Alexey Zlobin
+        <p style="text-align: center;">Powered by <a href="http://cryogenweb.org">Cryogen</a></p></footer>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>

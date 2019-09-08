@@ -127,11 +127,11 @@ blockquote footer {
 }
 
 pre {
+    padding: 0px;
     overflow-x: auto;
 }
 pre code {
     display: block;
-    padding: 0.5em;
     overflow-wrap: normal;
     white-space: pre;
 }

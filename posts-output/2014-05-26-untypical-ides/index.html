@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>cheatex: Нетипичные IDE</title>
+    <link rel="canonical" href="https://cheatex.cc/posts-output/2014-05-26-untypical-ides/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700" rel="stylesheet"
+          type="text/css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css">
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">cheatex</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li ><a href="/">Home</a></li>
+                <li
+                ><a href="/archives/">Archives</a></li>
+                
+                <li><a href="/feed.xml">RSS</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+</nav>
+
+
+<div class="container">
+
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div id="content">
+                
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">May 26, 2014</div>
+        
+    </div>
+    <h2>Нетипичные IDE</h2>
+</div>
+<div>
+    
+    <p> Не так давно я написал довольно обстоятельный пост про проблемы современных IDE. В частности подробно отписался почему они могут нанести существенный ущерб проекту без должной осторожности и почему заметной пользы они не приносят. Что характерно пост получился самым популярным за историю блога и много народу не поленилось даже отстоять любимый инструмент в твиттере.</p><p>Пришло время перейти к конструктиву и немного посмотреть как их можно делать среды которые что-то меняют в процессе разработки. Есть изрядное количество инструментов которые пытаются продвинуться за пределы 95го года и существенно изменить способ взаимодействия программиста и разрабатываемой им программы.</p><p>Вот например <a href='http://www.squeak.org/'>Squeake</a>, первый релиз 96 год. (Небось думали я с потолка год в прошлом посте взял? Правильно думали на самом деле, да и большинство обсуждаемых далее фич были в <a href='http://weather-dimensions.com/tedkaehler/us/ted/resume/st80release-lic2.jpg'>Smalltalk-80</a>). Я наверно повторяю очень известную вещь, но всё таки: основной чертой Smalltalk является существование live image. В нём нет статического кода и времени исполнения, всё что делает программист порождает объекты в одном образе, этот образ несёт в себе и код и живые объекты на одинаковых правах. Образ содержит и ядро языка, и разрабатываемое приложение, и среду разработки одновременно, при поставке пользователю ненужные классы удаляются.</p><p>Подход этот конечно спорный, но он имеет несколько явно положительных результатов. Например при разработке графики можно весьма просто с ней управляться. Например имея нарисованную как-то картинку можно немного её покрутить, примерить к другой картинке, продублировать. <a href='http://www.youtube.com/watch?v=oH-Jj_1v8BM#t=78'>Как-то так</a> или <a href='https://www.hpi.uni-potsdam.de/hirschfeld/trac/SqueakCommunityProjects/raw-attachment/wiki/squeak_screencasts/Image-Halos.m4v'>так</a> (вторая ссылка покороче, но требует скачивания видяшки). А после соответствующего благоустройства среда позволяет <a href='http://www.youtube.com/watch?v=34cWCnLC5nM'>что-то программировать</a> даже детям. Ну и вообще она полна простых приятностей, вот например Object inspector.</p><p><img src="/img/Exploring-ObjectExplorerInspector-2.jpg" alt="Object inspector" /></p><p>"Чего же тут такого интересного?" - многие спросят. Вроде и ничего, но вот 2014 год на дворе а все популярные среды разработки по-прежнему считают что цвет нормально показывать как десятизначное число.</p><p>Второй интересной наработкой Smalltalk является <a href='http://wiki.squeak.org/squeak/1916'>method finder</a>. Первая его фича - поиск по ключевым словам более менее освоена современными IDE. А вот вторая, поиск по примеру и сейчас, спустя примерно 30 лет после создания насколько я знаю ни кем не повторена. Если кратко она позволяет ввести пример результата метода при заданных аргументах и получить список методов которые этому примеру удовлетворяют. Например на запрос ' trim my spaces '. 'trim my spaces' он ответит #withBlanksTrimmed.</p><p>Ладно, хватит истории, вот пара проектов которые прямо сейчас в разработке. Первый, собравший 300k$ на кикстартере, <a href='http://www.lighttable.com/'>Light table</a>. Это IDE которая должна решить несколько известных проблем и серьёзно пересмотреть постановку других. На данный момент она нацелена на поддержку Clojure, JavaScript и Python. Среди наиболее интересных фичей:</p><ul><li>Абстрагирование от файлов проекта, редактор показывает и даёт редактировать функции динамически компонуя их по мере просмотра и редактирования исходников.</li><li>Автоматический показ документации и/или исходников связанных функций.</li><li>Интерактивная отладка, как через горячую подмену кода так и через 'watches' которые позволяют записывать и отображать состояние программы в отдельных точках.</li></ul><p>Текущие релизы правда пока сконцентрированы на разработке тюнингуемого редактора. Но разрабы <a href='https://groups.google.com/d/topic/light-table-discussion/1Hyeia7TXag/discussion'>полны решимости</a> довести первоначальную идею до конца, вплоть до запила своего языка с блэкджеком и монадами.</p><p>Проект <a href='http://peaker.github.io/lamdu/'>Lamdu</a> параллельно развивает язык и среду разработки для него. Язык построен на основе Haskell с изменениями направленными на большую явность конструкций и адаптацию для визуального представления структуры программ. В частности он вводит обязательные имена параметров для функций и явно отображает типы в лямбда-выражениях.</p><p>Среда построена вокруг структурированного представления и редактирования кода с выделением различных элементов шрифтом и цветом.  Редактор позволяет вводить код только в предназначенные для этого слоты, контролирует после ввода тип, предполагаются умные автодополнения. Ошибки типизации получаются хорошо локализованы (не могу не заметить что оригинальный хаскель тут от C++ ушёл совсем не далеко, точность ошибки компенсируется неопределённостью её местоположения).</p><p>Редактор автоматически применяет визуальную свёртку сложных языковых конструкций (вроде лямбд и аннотаций параметров как на картинке). Среди целей проекта предоставление билиотекам возможности настраивать отображение для своих структур данных и функций.</p><p><img src="/img/lamdu.png" alt="Lamdu" /></p><p>Также предполагается поддержка "regression debugging", то есть автоматический контроль хода выполнения теста и поиск изменения которое сломало тест. Примерно можно сказать что IDE будет запоминать все промежуточные результаты вычисления функций и сравнивать их для каждой версии. Хотя в контексте ленивости языка всё явно будет хитрее.</p><p>Помимо попыток привнести глобальные улучшения в IDE есть несколько инструментов реализующие какие-то конкретные компоненты гораздо лучше, чем принято в мэйнстриме.</p><p>Вот например <a href='http://2013.cppnow.org/session/the-projucer-live-coding-with-c-and-the-llvm-jit-engine/'>Projucer</a>, инструмент визуальный разработки для <a href='http://www.juce.com/'>Juce</a>. Ничего сверхъестественного, просто быстрая связь кода и картинки, но всё-таки поживее многочисленных SWING-дизайнеров, а пишется одним человеком.</p><p>Ещё один проект, коммерческий, <a href='http://chrononsystems.com/what-is-chronon'>Chronon</a>. Включает в себя "Time Traveling Debugger". Это забавный инструмент который работает с полной записью исполнения программы. Записи получаются с помощью чёрной магии и второго компонента Chronon'а - "Recording Server". Нам же тут интересен дебаггер.</p><p>Его центральной фичей является возможность идти не только вперёд но и назад. Найдя ошибку можно вместо того чтобы расставлять бряки в подозрительных местах и перезапускать программу просто пойти назад и посмотреть "откуда пошло". Есть множество приятностей, вроде подсветки активных путей исполнения, истории состояний для переменных и вызовов методов. Много различных фильтров для поиска нужных значений в истории. Для примера можно посмотреть <a href='http://www.youtube.com/watch?v=X80EdpI9z1Y'>вот это видео</a>.</p><p>Последний пример с совсем неожиданного направления, из мира железячных корпораций и кровавого геймдева. PhysX debugger - инструмент для физического движка от nVidia. Он создан для отладки поведения физической модели в сложных сценах. И демонстрирует очень высокий уровень использования различных визуализаций. Если вам интересно визуальное программирование я рекомендую потратить 15 мин и посмотреть обзорный ролик целиком: <a href='https://www.youtube.com/watch?feature=player_embedded&v=aKsY-U4kUBA'>PVD tutorial video</a>.</p><p>В этом инструменте есть множество примеров визуализации разных аспектов динамических сцен и процесса их вычисления, вот <a href='https://www.youtube.com/watch?feature=player_embedded&v=aKsY-U4kUBA#t=434'>интересный кусочек</a> для ленивых (смотреть минуты три). Есть функции бэктрекинга, когда есть бажный объект, есть момент времени когда с ним что-то не так и надо найти откуда проблема появилась. Предусмотрены инструменты для командной работы, можно аннотировать дебаг-сессию оставляя каменты к объектам в определённые моменты времени. Сессия экспортируется и может быть передана коллеге для дальнейшего разбора проблемы. Действительно развитый инструмент для решения весьма нетривиальных задач.</p><p>Напоследок уже в который раз не могу не дать ссылку на сайт Bret Victor'а, которого авторы большинства описанных выше проектов называют в числе основных источников идей: <a href='http://worrydream.com/'>worrydream.com</a>. Если Вы ещё не изучили все его материалы стоит немедленно начать.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags-output/languages/">languages</a>
+    
+    <a href="/tags-output/ide/">ide</a>
+    
+    <a href="/tags-output/thoughts/">thoughts</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts-output/2014-06-19-whats-wrong-with-haskell/">&laquo; Что не так с Хаскелем</a>
+        
+        
+        <a class="right" href="/posts-output/2014-04-08-racket-env/">Альтернативная среда для Racket &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div id="sidebar">
+                
+                <div id="recent">
+                    <h3>Recent Posts</h3>
+                    <ul>
+                        
+                        <li><a href="/posts-output/2019-08-23-understanding-computation/">Understanding computation</a></li>
+                        
+                        <li><a href="/posts-output/2019-06-03-elements-of-programming/">Начала программирования</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-27-web-improved/">The HTML we shouldn&#39;t ever have</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-23-on-interviews/">Про интервью</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-27-fire-and-motion-2019/">Fire and motion 2019</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-13-conditional-failures/">Странный гайд по исключениям от гуавы</a></li>
+                        
+                    </ul>
+                </div>
+                
+                
+                <div id="tags">
+                    <h3>Tags</h3>
+                    <div class="tag-block">
+                    
+                    <a href="/tags-output/books/">books</a>
+                    
+                    <a href="/tags-output/technology/">technology</a>
+                    
+                    <a href="/tags-output/scala/">scala</a>
+                    
+                    <a href="/tags-output/clojure/">clojure</a>
+                    
+                    <a href="/tags-output/web/">web</a>
+                    
+                    <a href="/tags-output/vscode/">vscode</a>
+                    
+                    <a href="/tags-output/process/">process</a>
+                    
+                    <a href="/tags-output/management/">management</a>
+                    
+                    <a href="/tags-output/TG repost/">TG repost</a>
+                    
+                    <a href="/tags-output/commons-logging/">commons-logging</a>
+                    
+                    <a href="/tags-output/java/">java</a>
+                    
+                    <a href="/tags-output/HR/">HR</a>
+                    
+                    <a href="/tags-output/haskell/">haskell</a>
+                    
+                    <a href="/tags-output/racket/">racket</a>
+                    
+                    <a href="/tags-output/log4j/">log4j</a>
+                    
+                    <a href="/tags-output/task management/">task management</a>
+                    
+                    <a href="/tags-output/languages/">languages</a>
+                    
+                    <a href="/tags-output/jboss/">jboss</a>
+                    
+                    <a href="/tags-output/links/">links</a>
+                    
+                    <a href="/tags-output/planning/">planning</a>
+                    
+                    <a href="/tags-output/sublime/">sublime</a>
+                    
+                    <a href="/tags-output/excetions/">excetions</a>
+                    
+                    <a href="/tags-output/lisp/">lisp</a>
+                    
+                    <a href="/tags-output/error-handling/">error-handling</a>
+                    
+                    <a href="/tags-output/ide/">ide</a>
+                    
+                    <a href="/tags-output/exceptions/">exceptions</a>
+                    
+                    <a href="/tags-output/interviews/">interviews</a>
+                    
+                    <a href="/tags-output/thoughts/">thoughts</a>
+                    
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <footer>Copyright &copy; 2019 Alexey Zlobin
+        <p style="text-align: center;">Powered by <a href="http://cryogenweb.org">Cryogen</a></p></footer>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>

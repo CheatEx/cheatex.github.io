@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>cheatex: Альтернативная среда для Racket</title>
+    <link rel="canonical" href="https://cheatex.cc/posts-output/2014-04-08-racket-env/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700" rel="stylesheet"
+          type="text/css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css">
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">cheatex</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li ><a href="/">Home</a></li>
+                <li
+                ><a href="/archives/">Archives</a></li>
+                
+                <li><a href="/feed.xml">RSS</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+</nav>
+
+
+<div class="container">
+
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div id="content">
+                
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">April 8, 2014</div>
+        
+    </div>
+    <h2>Альтернативная среда для Racket</h2>
+</div>
+<div>
+    
+    <p>Это последний отчёт о моих опытах с Racket и посвящён он сугубо техническому вопросу, а именно среде разработки. По умолчанию новоиспечённому Racket-разработчику предлагается минимальная среда разработки. Она умеет открывать файлы с исходниками, подсвечивать синтаксис, загружать их в простой (ну очень простой) REPL и запускать под отладкой.</p><p>В принципе это не так и мало, но хотелось большего. А именно:</p><ul><li>Полноценного REPL который бы помнил историю команд и умел подгружать изменения без полного перезапуска.</li><li>Быстрой навигации по именам функций и структур.</li><li>Богатого функционалом текстового редактора, в частности мультивыделения и быстрого поиска.</li><li>Поддержки проектов, по крайней мере коллекций файлов по которым можно искать.</li></ul><p>REPL достаточно быстро нашёлся, <a href='http://docs.racket-lang.org/xrepl/'>xrepl</a>. Он прекрасно помнит историю, умеет (пере)загружать файлы, заходить в них чтобы тестировать не экспортированные функции и органично встраивается в shell. Инструкция по установке на сайте хорошо работает, для полного счастья только пришлось добавить в bash_aliases следующую строчку: <code>xracket=&quot;racket -il xrepl&quot;</code>. Она запускает Racket в интерактивном режиме и загружает модуль xrepl. Модуль написан таким образом что сам применяет все необходимые хаки для создания полноценной оболочки.</p><p>Однако не сразу всё идеально заработало. Файлы с константами было невозможно перезагружать ,rr - Racket выдавал ошибку переопределения имён. Небольшое исследование вопроса показало что это связано с включенными по умолчанию оптимизациями и легко может быть исправлено одной командой, алиас принял вид <code>xracket=&quot;racket -il xrepl --eval '&#40;compile-enforce-module-constants #f&#41;'&quot;</code>.</p><p>Остальные 3 функции поставляет Sublime оставалось только подружить его немного с ЛИСПом, благо я не первый кто этим озадачился. Установка пары плагинов налаживает между крепкую дружбу между Racket и Sublime. Для упрощения жизни я использовал <a href='https://sublime.wbond.net/installation#st2'>Package Control</a>.</p><p>Первый и самый насущный - конечно отступы :) <a href='https://sublime.wbond.net/packages/lispindent'>lispindent</a> - отлично справляется с этой задачей и даже не пугается квадратных скобок.</p><p>Второй - <a href='https://github.com/follesoe/sublime-racket'>подсветка синтаксиса</a>. В принципе она уже была, однако некоторые конструкции понимала не корректно. В частности совершенно убивали подсветку литералы #something а также функции и структуры не появлялись в списке символов. За пару дней поправил всё это и даже заслал патч в основную ветку проекта.</p><p>Ну и последняя доводка из области эстетства - красивая подсветка скобок и быстрый переход между ними. Делается плагином Bracket Highlighter. Очень удобно показывает границы блока слева, рядом с номерами строк а также позволяет включить "усиленную подсветку" - дополнительно подсветить весь текст принадлежащий выделенному блоку. Плюшки вроде удалить блок или перейти во внешний также присутствуют.</p><p>Для того чтобы всё это дружило потребовалось буквально пара настроек.</p><p>Во-первых надо включить lispindent для соответствующего языка следующей настройкой в <code>lispindent.sublime-settings</code> (если используется Package Control то его можно открыть через меню Preferences->Package settings).</p><pre><code>{
+  &quot;languages&quot;: {
+    &quot;racket&quot;: {
+      &quot;syntax&quot;: &quot;Racket.tmLanguage&quot;
+    }
+  }
+}
+</code></pre><p>В настройках Bracket Highlighter, которые <code>bh&#95;core.sublime-settings</code> (также легко открываются через меню Preferences->Package settings) надо только найти и настроить под себя параметр <code>high&#95;visibility&#95;style</code>, мне понравился <code>underline</code>. Также удобно повесить переключение этого режима на хоткей, для этого в <code>Default.sublime-keymap</code> надо дописать</p><pre><code>{
+  &quot;keys&quot;: &#91;&quot;ctrl+\\&quot;&#93;,
+  &quot;command&quot;: &quot;bh&#95;toggle&#95;high&#95;visibility&quot;
+}
+</code></pre><p>Ну и проверить что файлы <code>.rkt</code> открываются как Racket по умолчанию.</p><p>В принципе это всё. Я первый раз что-то глубоко копал в настройку Sublime и результат мне очень понравился. Всё, вплоть до написания своего плагина, решается достаточно легко и работает вполне безглючно.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags-output/racket/">racket</a>
+    
+    <a href="/tags-output/sublime/">sublime</a>
+    
+    <a href="/tags-output/lisp/">lisp</a>
+    
+    <a href="/tags-output/ide/">ide</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts-output/2014-05-26-untypical-ides/">&laquo; Нетипичные IDE</a>
+        
+        
+        <a class="right" href="/posts-output/2010-02-25-what-to-ask/">Что интересно спросить у работодателя &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div id="sidebar">
+                
+                <div id="recent">
+                    <h3>Recent Posts</h3>
+                    <ul>
+                        
+                        <li><a href="/posts-output/2019-08-23-understanding-computation/">Understanding computation</a></li>
+                        
+                        <li><a href="/posts-output/2019-06-03-elements-of-programming/">Начала программирования</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-27-web-improved/">The HTML we shouldn&#39;t ever have</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-23-on-interviews/">Про интервью</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-27-fire-and-motion-2019/">Fire and motion 2019</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-13-conditional-failures/">Странный гайд по исключениям от гуавы</a></li>
+                        
+                    </ul>
+                </div>
+                
+                
+                <div id="tags">
+                    <h3>Tags</h3>
+                    <div class="tag-block">
+                    
+                    <a href="/tags-output/books/">books</a>
+                    
+                    <a href="/tags-output/technology/">technology</a>
+                    
+                    <a href="/tags-output/scala/">scala</a>
+                    
+                    <a href="/tags-output/clojure/">clojure</a>
+                    
+                    <a href="/tags-output/web/">web</a>
+                    
+                    <a href="/tags-output/vscode/">vscode</a>
+                    
+                    <a href="/tags-output/process/">process</a>
+                    
+                    <a href="/tags-output/management/">management</a>
+                    
+                    <a href="/tags-output/TG repost/">TG repost</a>
+                    
+                    <a href="/tags-output/commons-logging/">commons-logging</a>
+                    
+                    <a href="/tags-output/java/">java</a>
+                    
+                    <a href="/tags-output/HR/">HR</a>
+                    
+                    <a href="/tags-output/haskell/">haskell</a>
+                    
+                    <a href="/tags-output/racket/">racket</a>
+                    
+                    <a href="/tags-output/log4j/">log4j</a>
+                    
+                    <a href="/tags-output/task management/">task management</a>
+                    
+                    <a href="/tags-output/languages/">languages</a>
+                    
+                    <a href="/tags-output/jboss/">jboss</a>
+                    
+                    <a href="/tags-output/links/">links</a>
+                    
+                    <a href="/tags-output/planning/">planning</a>
+                    
+                    <a href="/tags-output/sublime/">sublime</a>
+                    
+                    <a href="/tags-output/excetions/">excetions</a>
+                    
+                    <a href="/tags-output/lisp/">lisp</a>
+                    
+                    <a href="/tags-output/error-handling/">error-handling</a>
+                    
+                    <a href="/tags-output/ide/">ide</a>
+                    
+                    <a href="/tags-output/exceptions/">exceptions</a>
+                    
+                    <a href="/tags-output/interviews/">interviews</a>
+                    
+                    <a href="/tags-output/thoughts/">thoughts</a>
+                    
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <footer>Copyright &copy; 2019 Alexey Zlobin
+        <p style="text-align: center;">Powered by <a href="http://cryogenweb.org">Cryogen</a></p></footer>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
