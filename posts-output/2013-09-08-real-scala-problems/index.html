@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>cheatex: Пара слов о реальных проблемах со Scala</title>
+    <link rel="canonical" href="https://cheatex.cc/posts-output/2013-09-08-real-scala-problems/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700" rel="stylesheet"
+          type="text/css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css">
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">cheatex</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li ><a href="/">Home</a></li>
+                <li
+                ><a href="/archives/">Archives</a></li>
+                
+                <li><a href="/feed.xml">RSS</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+</nav>
+
+
+<div class="container">
+
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div id="content">
+                
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">September 8, 2013</div>
+        
+    </div>
+    <h2>Пара слов о реальных проблемах со Scala</h2>
+</div>
+<div>
+    
+    <p>Как то давно я накатал изрядную стену текста на тему что хорошо в Scala и почему  люди рассказывающие что на ней невозможно писать не вызывают у меня доверия: <a href='http://it-talk.org/post82738.html#p82738'>http://it-talk.org/post82738.html#p82738</a></p><p>Пришло время востановить баланс и немного поговорить о конкретных проблемах, которые я в ней вижу.</p><p>Первое что раздражает после перехода с Java - время компиляции. Можно сказать что от среднеполезного проекта можно ожидать времени компиляции от 2 минут. Это крайне печально. Отложенный фидбэк замедляет разработку. Для склонных отвлекаться людей вроде меня фатально замедляет; частенько запустив компиляцию я обнаруживаю себя мин через 20 читающим какую-нибудь мало относящуюся к задаче статейку. В то время как всё прогрессивное человечество минимизирует циклы работы, разработчики компилятора не занимаются этой проблемой уже много лет. fsc по моему опыту радикально ситуацию не улучшает.</p><p>Существенно лучше показывает себя sbt и волшебная ~. Однако тул это не простой, когда я следил за его развитием совместимость ломалась чуть не каждый релиз. А если надо развивать проект с историей, то смену системы сборки в серьёз никто не рассматривает. В итоге сейчас я вижу скорость работы компилятора главной проблемой scala.</p><p>Вторая серьёзная проблема - это подготовка пишущих. Часто можно слышать позитивные рассказы про так один человек взял и внедрил и вся команда в функциональном экстазе залабала в разы быстрее. Это не правда. Если дать скалу человеку, которого в универе учили на паскале а потом он 5 лет писал на джаве, вы получите кучу (в смысле втрое больше чем того требует задача) джава-кода в другом синтаксисе но компилирующегося в 8 раз медленнее. Более менее окупающее в моём понимании применение скалы требует нескольких вещей от всех кто её использует.</p><p>Во-первых это понимания почему собственно этот язык. Если люди уверены что new ArrayList/for/add лучше map, он и правда будет лучше!</p><p>Во-вторых базового навыка программирование в функциональном стиле. Ничего космического, но надо ясно видеть в коде простые паттерны роде map/filter. Не заводить переменные без повода. Понимать что функции можно параметризовать не только данными но и операциями. Уметь создавать простые АТД по мере необходимости (а не мега бины со сложной символикой null'ов в разных полях). Вообще этерпрайзие мозга сводит на нет потуги эффективно применить языки моложе 20 лет :)</p><p>По большому счёту это все серьёзные проблемы, но есть еще пара неприятностей.</p><p>Не совсем уравновешенное сообщество. В том смысле что нельзя смотреть лежащий на гитхабе код и стабильно учиться. Не устоялся стиль, не сформировались практики. Нет общепринятой границы хорошо-плохо (что на самом деле хорошо, но не в самом начале). Кто-то пишет на самом деле на хаскеле, у кого-то джава с замыканиями. Нужно очень критическое восприятие для того чтобы отбирать решения и техники для своего проекта. Пруф: <a href='http://ru-scala.livejournal.com/39341.html'>http://ru-scala.livejournal.com/39341.html</a>.</p><p>Переусложнена на мой взгляд библиотека коллекций. Множество методов преобразования с неочевидными результатами. Куча классов и методов время работы которых непросто удержать в голове.</p><p>Противоречивый, сложный фреймворк Akka. Который позиционируется как аналог OTP выполненный на JVM, но на самом деле принципиально от него отличается.</p><p>Вот вроде и всё. Ваши мысли по сабжу?</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags-output/scala/">scala</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts-output/2013-10-16-GEB/">&laquo; ГЭБ</a>
+        
+        
+        <a class="right" href="/posts-output/2013-09-08-links-1/">Линкопост &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div id="sidebar">
+                
+                <div id="recent">
+                    <h3>Recent Posts</h3>
+                    <ul>
+                        
+                        <li><a href="/posts-output/2019-08-23-understanding-computation/">Understanding computation</a></li>
+                        
+                        <li><a href="/posts-output/2019-06-03-elements-of-programming/">Начала программирования</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-27-web-improved/">The HTML we shouldn&#39;t ever have</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-23-on-interviews/">Про интервью</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-27-fire-and-motion-2019/">Fire and motion 2019</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-13-conditional-failures/">Странный гайд по исключениям от гуавы</a></li>
+                        
+                    </ul>
+                </div>
+                
+                
+                <div id="tags">
+                    <h3>Tags</h3>
+                    <div class="tag-block">
+                    
+                    <a href="/tags-output/books/">books</a>
+                    
+                    <a href="/tags-output/technology/">technology</a>
+                    
+                    <a href="/tags-output/scala/">scala</a>
+                    
+                    <a href="/tags-output/dsls/">dsls</a>
+                    
+                    <a href="/tags-output/clojure/">clojure</a>
+                    
+                    <a href="/tags-output/web/">web</a>
+                    
+                    <a href="/tags-output/vscode/">vscode</a>
+                    
+                    <a href="/tags-output/conferences/">conferences</a>
+                    
+                    <a href="/tags-output/process/">process</a>
+                    
+                    <a href="/tags-output/TG repost/">TG repost</a>
+                    
+                    <a href="/tags-output/commons-logging/">commons-logging</a>
+                    
+                    <a href="/tags-output/java/">java</a>
+                    
+                    <a href="/tags-output/HR/">HR</a>
+                    
+                    <a href="/tags-output/haskell/">haskell</a>
+                    
+                    <a href="/tags-output/racket/">racket</a>
+                    
+                    <a href="/tags-output/log4j/">log4j</a>
+                    
+                    <a href="/tags-output/task management/">task management</a>
+                    
+                    <a href="/tags-output/languages/">languages</a>
+                    
+                    <a href="/tags-output/programming/">programming</a>
+                    
+                    <a href="/tags-output/jboss/">jboss</a>
+                    
+                    <a href="/tags-output/links/">links</a>
+                    
+                    <a href="/tags-output/planning/">planning</a>
+                    
+                    <a href="/tags-output/sublime/">sublime</a>
+                    
+                    <a href="/tags-output/lisp/">lisp</a>
+                    
+                    <a href="/tags-output/error-handling/">error-handling</a>
+                    
+                    <a href="/tags-output/ide/">ide</a>
+                    
+                    <a href="/tags-output/exceptions/">exceptions</a>
+                    
+                    <a href="/tags-output/interviews/">interviews</a>
+                    
+                    <a href="/tags-output/thoughts/">thoughts</a>
+                    
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <footer>Copyright &copy; 2019 Alexey Zlobin
+        <p style="text-align: center;">Powered by <a href="http://cryogenweb.org">Cryogen</a></p></footer>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
