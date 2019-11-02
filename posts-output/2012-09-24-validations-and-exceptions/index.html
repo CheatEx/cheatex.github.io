@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>cheatex: Validation и исключения: совместная жизнь</title>
+    <link rel="canonical" href="https://cheatex.cc/posts-output/2012-09-24-validations-and-exceptions/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700" rel="stylesheet"
+          type="text/css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css">
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">cheatex</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li ><a href="/">Home</a></li>
+                <li
+                ><a href="/archives/">Archives</a></li>
+                
+                <li><a href="/feed.xml">RSS</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+</nav>
+
+
+<div class="container">
+
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div id="content">
+                
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">September 24, 2012</div>
+        
+    </div>
+    <h2>Validation и исключения: совместная жизнь</h2>
+</div>
+<div>
+    
+    <p> Итак, после ознакомления с основными техниками применения валидаций давайте подумаем как их можно использовать в "реальном" проекте. "Реальный" проект подразумевает работу не в интерпретаторе в течении пары миллисекунд, под чутким присмотром автора, а на сервере далеко за океаном. И лишь изредка суровый незнакомый админ будет проверять не сожрала ли программа всю имеющуюся память...</p><p>Это значит,что будет происходить много чего о чём автор кода мог даже не догадываться. А о таких вещах JVM извещает код бросая исключения. Да да, возьмёт и бросит, и плевать ей на чистоту.</p><p>Ну и есть ещё один момент, не каждый алгоритм так уж легко записать, обрабатывая ошибки с помощью валидаций. Вот, например, такая штука была в какой-то момент у меня в проекте:</p><pre><code class="Scala">def readFields&#40;rec: DBObject, ...&#41;: GzVal&#91;DataRecord&#93; = {
+  val deletedBy =
+    for {
+      userId &lt;- get&#91;ObjectId&#93;&#40;rec, &quot;deleted&#95;by&quot;&#41;;
+      user &lt;- getUserData&#40;userId&#41;.toSuccess&#40;MissedEntity&#40;userId.toString, &quot;user&quot;&#41;&#41;
+    } yield user
+  for {
+    id &lt;- get&#91;String&#93;&#40;rec, &quot;&#95;id&quot;&#41;
+    content &lt;- get&#91;String&#93;&#40;rec, &quot;content&quot;&#41;
+    updated &lt;- asValidOption&#40;get&#91;DateTime&#93;&#40;rec, &quot;upd&quot;&#41;&#41;
+    //twelve more
+    user &lt;- getUserById&#40;userId, currentUserId map &#40;new ObjectId&#40;&#95;&#41;&#41;&#41;
+      .toSuccess&#40;MissedEntity&#40;userId.toString, &quot;user&quot;&#41;: ValidationError&#41;
+  } yield DataRecord&#40;/&#42;you not gonna like it&#42;/&#41;
+}
+</code></pre><p>В общем-то ничего сложного - берём запись из БД, разбираем проверяем значения, создаём объект. При этом что-то может упасть, но что и как упало на этом уровне никого не волнует. Разбор записи надо прекращать сразу независим от от того нарушилась ли консистентность или умерло соединение с БД.</p><p>Мои основные мысли на тему Exceptions vs. Validations можно выразить таким вот набором тезисов:</p><ul><li>Валидации позволяют очень выразительно и кратко обрабатывать ошибки в чистом коде.</li><li>При этом используя и смешивая разные стили обработки ошибок.</li><li>Они требуют небольшой синтаксической избыточности на каждую операцию.</li><li>В то же время исключения часто являются вполне достойной абстракцией для обработки ошибок.</li><li>Они создают значительную синтаксическую избыточность, зато сразу на группу операций.</li><li>Суммируя эти наблюдения с тем фактом, что неожиданные исключения всё-равно будут пролетать, я принял на вооружение следующие принципы:</li><li>Высокоуровневые абстракции в приложении стоит строить используя валидации, однако страховать их на случай совсем внезапной ошибки.</li><li>Тот код который легче написать с использованием исключений нужно писать с использованием исключений.</li><li>Исключения из такого кода надо ловить и преобразовывать в валидации.</li></ul><p>Далее я попробую описать основные детали того, как я пытался преобразовать эти принципы в работающую архитектуру. Для начала общая картина, срисованная с моего доклада в Минске.</p><p><img src="/img/validations-context.png" alt="Architecture diagram" /></p><p>Слева располагается достаточно грязный код, связанный с внешними службами вроде хранилища данных. Он бросает исключения как часть логики. Для него нужно выделить некоторый набор интерфейсных методов, которые перехватывают исключения и преобразовывают их в ошибки (символическая зелёная рамка). Преобразование это является по сути простой функцией, которую (не в случае бибилиотечного кода) вполне можно статически задать просто одну на систему ('Exception converter' на диаграмме).</p><p>Те, кто находятся правее написаны в более чистом стиле, игнорируют исключения (в смысле прозрачного пробрасывания наверх, а не в смысле подавления). Об их существовании вновь вспоминает лишь тонкая прослойка, между нашим кодом и внешним миром (в моём случае это был Lift, в других может быть сетевая библиотека или GUI). Давайте рассмотрим несколько фрагментов кода, для более точного представления этих идей. Скажем для нашего HTTP сервиса из предыдущих примеров мы отказались от строки как от типа ошибки, определив такой класс:</p><pre><code class="Scala">abstract class Error&#40;
+  val httpCode: Int,
+  val code: String&#41;
+</code></pre><p>И каких-то его потомков, например так:</p><pre><code class="Scala">case class MissedEntity&#40;
+  id: String, type: String&#41;
+extends Error&#40;404, &quot;MISSED&#95;ENTITY&quot;&#41;
+
+case class InternalError&#40;
+  @transient Throwable cause&#41;
+extends Error&#40;cause, &quot;INTERNAL&quot;&#41;
+</code></pre><p>Тогда можно легко задать функцию преобразования:</p><pre><code class="Scala">val dispatchException: Function&#91;Throwable, Error&#93; = {
+  case UserNotFound&#40;name&#41; =&gt;
+    MissedEntity&#40;name, &quot;user&quot;&#41;
+  ...
+  // Don't remove it!!!
+  case t =&gt; InternalError&#40;t&#41;
+}
+</code></pre><p>Имея на руках такую функцию можно написать систему из методов-врапперов для экранирования интерфейсных методов (зелёная рамочка) и собрать из них более или менее абстрактный модуль. Это будет выглядеть примерно так:</p><pre><code class="Scala">def safeVal&#91;T&#93;: Catch&#91;ReqVal&#91;T&#93;&#93; =
+  handling&#40;classOf&#91;Throwable&#93;&#41; by { e =&gt;
+    dispatchException&#40;e&#41;.fail
+  }
+
+def safe&#91;T&#93;&#40;block: =&gt; T&#41;: ReqVal&#91;T&#93; =
+  safeVal&#40; block.success &#41;
+</code></pre><p>Здесь используется стандартный модуль <code>control.Exception</code>. Описывающий  обработку исключений в функциональном стиле. Если бы хотелось иметь более гибкую связь исключений с нашими ошибками, например иметь несколько стратегий отображения, то именно соединяя этот модуль с разными функциями отображения мы могли бы добиться необходимой адаптивности кода.</p><p>Пользоваться этими служебными функциями можно так:</p><pre><code class="Scala">def editData&#40;e: Edit&#41;:
+  ReqVal&#91;Data&#93; = safe {
+    //all dangerous stuff here
+  }
+</code></pre><p>Экранируя подобным образом методы компонентов связанных с вводом-выводом (или ещё чем-то трудно обрабатываемым при помощи валидаций) мы можем создать на определённом уровне глобальный переход от одного способа работы с ошибками к другому. И стоящая выше логика может пользоваться всеми теми приятностями про которые рассказывал ранее. На картинке это уровни 'Services' и 'Controllers'.</p><p>Есть ещё один важнейший момент, который подвиг меня на все эти эксперименты, но о котором я не говорил ранее. Дело в том, что конечной целью было построение REST сервиса, использующего протокол HTTP. Замечательной особенностью HTTP, дичайше игнорируемой всеми, является прямая поддержка сообщений об ошибках. В нём есть понятие кода ответа, что позволяет стандартным образом с детально описанной семантикой отвечать любому клиенту и быть понятым. Ещё раз подумайте, до любого клиента, хоть браузера, хоть curl можно донести что пошло не так и как с этим можно побороться... Вместо этого повсеместно практикуется '200 OK... {error: "Failed to..."}'. Зачем???!!!</p><p>Ну да, хватит о грустном. Поговорим о весёлом. А состоит оно в том что если мы представить себе, что у нас есть класс <code>HttpResponse</code>, позволяющий описать все ответы. То преобразование из результата R выполнения какой-то операции в <code>HttpResponse</code> концептуально абсолютно корректно задать как функцию <code>Validation&#91;R&#93; =&gt; HttpResponse</code>. Которая естественным образом распадается на незатейливый шаблон:</p><pre><code>r match {
+  case Sucess&#40;r&#41; =&gt; buildSuccessResponse&#40;r&#41;
+  case Failure&#40;f&#41; =&gt; buildFailureResponse&#40;f&#41;
+}
+</code></pre><p>Где <code>buildFailureResponse</code>, как не сложно догадаться задаётся один раз на систему, а весь шаблон легко инкапсулируется в простую конструкцию. Предполагая, что у нас определены фунция-сериализатор <code>decompose: Any=&gt;JSONObject</code> и преобразование из объекта ошибки в HTTP ответ errorResponse, можно написать такую функцию.</p><pre><code class="Scala">def valsToResponse&#91;A&#93;&#40;v: ListVal&#91;A&#93;&#41;: HttpResponse = v match {
+  case Success&#40;res&#41; =&gt;
+    JsonResponse&#40;decompose&#40;rel&#41;, successCode&#41;
+  case Failure&#40;err&#41; =&gt; errorResponse&#40;err&#41;
+}
+</code></pre><p>Имея операцию <code>op: A=&gt;ListVal&#91;B&#93;</code>, где <code>A</code> и <code>B</code> уже специфичные для приложения классы представления запросов и ответов, можно легко строить (нетривиальные!) обработчики запросов в одну строчку.</p><pre><code class="Scala">def getUsers&#40;req: Req, namePattern: String&#41;: LiftResponse = valsToResponse {
+  getUsersInternal&#40;namePattern&#41; map { users =&gt;
+    val &#40;count, list&#41; = users
+    Map&#40;&quot;count&quot; -&gt; count, &quot;items&quot; -&gt; list&#41;
+  }
+}
+</code></pre><p>Здесь для примера я преобразую пришедший список результатов в пару значений длина и собственно список (ну представим что кому-то из клиентов так удобнее ;) ). В таком примере <code>getUsersInternal</code> имел бы тип <code>String =&gt; ListVal&#91;List&#91;User&#93;&#93;</code>.</p><p>Такого вида функции тривиально цепляются к REST модулю Lift - не буду тратить место на пример.</p><p>Осталось предусмотреть последнюю деталь: возможность выброса исключения кодом высокого уровня. От них трудно страховаться, и глупо готовиться к ним везде в коде программы. Простое решение - перехват исключения с помощью некоторого хука, который предоставляют большинство контейнеров и фреймворков, конвертация в ошибку и преобразование уже её в ответ. В моём случае таким хуком являлся <code>LiftRules.exceptionHandler</code>.</p><p>Вот в общем и всё. Наверно выглядит немного сумбурно, но примерно так оно и было. Надеюсь этот пример, кому нибудь поможет.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags-output/scala/">scala</a>
+    
+    <a href="/tags-output/validation/">validation</a>
+    
+    <a href="/tags-output/scalaz/">scalaz</a>
+    
+    <a href="/tags-output/programming/">programming</a>
+    
+    <a href="/tags-output/exceptions/">exceptions</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts-output/2012-09-24-DSLs-and-CPJ/">&laquo; &quot;DSLs in action&quot; и &quot;Concurrent programming in java&quot;</a>
+        
+        
+        <a class="right" href="/posts-output/2012-03-11-prog-erlang-i-matematician/">&quot;Programming Erlang&quot; и &quot;Я - математик&quot; &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div id="sidebar">
+                
+                <div id="recent">
+                    <h3>Recent Posts</h3>
+                    <ul>
+                        
+                        <li><a href="/posts-output/2019-08-23-understanding-computation/">Understanding computation</a></li>
+                        
+                        <li><a href="/posts-output/2019-06-03-elements-of-programming/">Начала программирования</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-27-web-improved/">The HTML we shouldn&#39;t ever have</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-23-on-interviews/">Про интервью</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-27-fire-and-motion-2019/">Fire and motion 2019</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-13-conditional-failures/">Странный гайд по исключениям от гуавы</a></li>
+                        
+                    </ul>
+                </div>
+                
+                
+                <div id="tags">
+                    <h3>Tags</h3>
+                    <div class="tag-block">
+                    
+                    <a href="/tags-output/books/">books</a>
+                    
+                    <a href="/tags-output/technology/">technology</a>
+                    
+                    <a href="/tags-output/scala/">scala</a>
+                    
+                    <a href="/tags-output/dsls/">dsls</a>
+                    
+                    <a href="/tags-output/clojure/">clojure</a>
+                    
+                    <a href="/tags-output/web/">web</a>
+                    
+                    <a href="/tags-output/vscode/">vscode</a>
+                    
+                    <a href="/tags-output/lift/">lift</a>
+                    
+                    <a href="/tags-output/conferences/">conferences</a>
+                    
+                    <a href="/tags-output/process/">process</a>
+                    
+                    <a href="/tags-output/validation/">validation</a>
+                    
+                    <a href="/tags-output/TG repost/">TG repost</a>
+                    
+                    <a href="/tags-output/commons-logging/">commons-logging</a>
+                    
+                    <a href="/tags-output/java/">java</a>
+                    
+                    <a href="/tags-output/HR/">HR</a>
+                    
+                    <a href="/tags-output/scalaz/">scalaz</a>
+                    
+                    <a href="/tags-output/haskell/">haskell</a>
+                    
+                    <a href="/tags-output/racket/">racket</a>
+                    
+                    <a href="/tags-output/log4j/">log4j</a>
+                    
+                    <a href="/tags-output/task management/">task management</a>
+                    
+                    <a href="/tags-output/languages/">languages</a>
+                    
+                    <a href="/tags-output/programming/">programming</a>
+                    
+                    <a href="/tags-output/jboss/">jboss</a>
+                    
+                    <a href="/tags-output/links/">links</a>
+                    
+                    <a href="/tags-output/planning/">planning</a>
+                    
+                    <a href="/tags-output/sublime/">sublime</a>
+                    
+                    <a href="/tags-output/lisp/">lisp</a>
+                    
+                    <a href="/tags-output/error-handling/">error-handling</a>
+                    
+                    <a href="/tags-output/ide/">ide</a>
+                    
+                    <a href="/tags-output/exceptions/">exceptions</a>
+                    
+                    <a href="/tags-output/interviews/">interviews</a>
+                    
+                    <a href="/tags-output/thoughts/">thoughts</a>
+                    
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <footer>Copyright &copy; 2019 Alexey Zlobin
+        <p style="text-align: center;">Powered by <a href="http://cryogenweb.org">Cryogen</a></p></footer>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
