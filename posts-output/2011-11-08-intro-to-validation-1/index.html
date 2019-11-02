@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>cheatex: Введение в Validation: часть 1</title>
+    <link rel="canonical" href="https://cheatex.cc/posts-output/2011-11-08-intro-to-validation-1/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700" rel="stylesheet"
+          type="text/css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.7.0/styles/default.min.css">
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">cheatex</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li ><a href="/">Home</a></li>
+                <li
+                ><a href="/archives/">Archives</a></li>
+                
+                <li><a href="/feed.xml">RSS</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+</nav>
+
+
+<div class="container">
+
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div id="content">
+                
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">November 8, 2011</div>
+        
+    </div>
+    <h2>Введение в Validation: часть 1</h2>
+</div>
+<div>
+    
+    <p> В этом посте я хочу подготовить почву для будущего рассказа о подходе к обработке ошибок, который как ни крути получился весьма скомканный без должной политической подготовки аудитории. Его темой будет класс Validation из библиотеки scalaz, некоторые (далеко не все) техники работы с ним и отдельные языковые конструкции, которые я нашёл наиболее полезными.</p><p>Этот класс по сути объявлен следующим образом:</p><pre><code class="Scala">sealed trait Validation&#91;+E, +A&#93; {
+  def isSuccess : Boolean = this match {
+    case Success&#40;&#95;&#41; =&gt; true
+    case Failure&#40;&#95;&#41; =&gt; false
+  }
+  def isFailure : Boolean = !isSuccess
+}
+
+final case class Success&#91;E, A&#93;&#40;a: A&#41; extends Validation&#91;E, A&#93;
+final case class Failure&#91;E, A&#93;&#40;e: E&#41; extends Validation&#91;E, A&#93;
+</code></pre><p>В объявлении есть ещё ряд интересных методов, но давайте пока оставим их без внимания. Ничего не напоминает? Да это же брат-близнец <a href='http://www.scala-lang.org/api/2.9.1/index.html#scala.Either'><code>Either</code></a>. Опять велик? Спокойно, эта модель обладает рядом важных свойств.</p><p>Во-первых у него объявлены методы map и flatMap. В scala это означает, что мы можем использовать экземпляры этого класса (на самом деле trait, но как это блин по-русски сказать то?) в выражении for. Например так (это переписанный код метода login из моего давнего поста на эту же тему):</p><pre><code class="Scala">def login&#40;login: Option&#91;String&#93;, password: Option&#91;String&#93;&#41;: Validation&#91;String, UserInfo&#93; =
+  for {
+    login &lt;- login.toSuccess&#40; &quot;You should provide login&quot; &#41;
+    password &lt;- password.toSuccess&#40; &quot;You should provide password&quot; &#41;
+    user &lt;- findUser&#40;login&#41;
+    checkedUser &lt;- checkUser&#40;user&#41;
+    loggedUser &lt;- doLogin&#40;checkedUser, login, password&#41;
+  } yield loggedUser
+</code></pre><p>Потратим немного времени и рассмотрим этот пример подробнее. Во-первых имеющиеся логин и пароль пользователя преобразуются из <code>Option</code> в <code>Validation</code> с помощью метода <a href='https://github.com/scalaz/scalaz/blob/6.0.3/core/src/main/scala/scalaz/OptionW.scala#L84'><code>toSuccess</code></a>, его реализация абсолютно очевидна. Об этой операции можно думать следующим образом: альтернатива из существующего или отсутствующего значения преобразуется в альтернативу из валидного значения или сообщения об ошибке. Во-вторых происходят вызовы методов <code>findUser</code>, <code>checkUser</code>, <code>doLogin</code>. Мне не хочется тратить время на детальное их описание, будем считать что они объявлены принимающими обычные значения (не <code>Option</code> или <code>Validation</code>, а строки и объекты) и возвращающими <code>Validation&#91;UserInfo, String&#93;</code>. То есть каждый из них принимает некоторые данные для проверки и возвращает либо информацию о прошедшем эту проверку пользователе либо сообщение о случившейся ошибке.</p><p>Теперь очередь магии внутри выражения <code>for</code>. <- в данном контексте работает как "Если у нас справа успешное вычисление связать имя слева с его результатом, если неудача - вернуть его как результат всего выражения." А `yield` в свою очередь работает как "Если все связывания были успешны вычислить выражение и вернуть его как успех". Обратите внимание, выбор всё ещё тут, но он спрятан в способе которым выражение for комбинирует свои элементы.</p><p>У <code>Either</code> методов <code>map</code> и <code>flatMap</code> нет, есть они только в его "проекциях" (<a href='https://lampsvn.epfl.ch/trac/scala/browser/scala/tags/R_2_9_1_final/src//library/scala/Either.scala#L221'>правой</a> и <a href='https://lampsvn.epfl.ch/trac/scala/browser/scala/tags/R_2_9_1_final/src//library/scala/Either.scala#L120'>левой</a>). На практике это значит, что использование <code>Validation</code> практически постоянно экономит нам 5 символов. Сравните код выше с кодом из моего старого поста.</p><p>Важно понимать, что этот подход позволяет унифицировано обрабатывать целый ряд проблемных ситуаций: (а) ошибку во входных данных (отсутствие пароля), (б) собственно отказ в обработке основанный на логике (пароль не верен) и (в) ошибку во внешней службе (БД легла в момент сверки пароля). При этом код верхнего уровня даже не упоминает никакие <code>Failure</code>, только использует <code>&lt;-</code> вместо <code>=</code>.</p><p>Помимо приятного синтаксического сахара для сокрытия if'ов от нашего взгляда, такой подход к передаче ошибок обладает одним важным свойством - отдельные методы следующие паттерну "значения на вход - валидации на выход" могут легко объединяться вместе рядом других способов помимо <code>for</code>. В каком-то смысле они обладают свойством замыкания. Для примера я сейчас построю простой модуль для парсинга параметров http запросов из пары десятков строк (полнофункциональная, боевая её версия около 50, но её я естественно никому не покажу :) ).</p><p>Пусть у нас есть класс <code>Req</code>, несущий в себе параметры HTTP запроса в форме словаря <имя параметра> - <список значений>. Нам нужен набор функций, позволяющий типобезопасно извлекать из него параметры, при этом возможно применяя некие алгоритмы парсинга (скажем, стандартный <code>toInt</code>). Также желательно иметь возможность извлекать необязательный параметры и наборы параметров. Интерфейс такого модуля можно описать следующим образом:</p><pre><code class="Scala">trait ReqValidation {
+  type ReqVal&#91;T&#93; = Validation&#91;String, T&#93;
+  //возвращает значение параметра как есть или сообщение о его отсутствии
+  def get&#40;req: Req, name: String&#41;: ReqVal&#91;String&#93;
+  //возвращает необязательное значение &#40;его выполнение всегда успешно&#41;
+  def getOpt&#40;req: Req, name: String&#41;: ReqVal&#91;Option&#91;String&#93;&#93;
+  //возвращает целое значение или собщение об ошибке парсинга или сообщение об отсутствии параметра
+  def getInt&#40;req: Req, name: String&#41;: ReqVal&#91;Int&#93;
+  //возвращает небязательное целое значение или собщение об ошибке парсинга
+  def getOptInt&#40;req: Req, name: String&#41;: ReqVal&#91;Option&#91;Int&#93;&#93;
+}
+</code></pre><p>Во-первых я ввожу новый тип для результата получения параметра. Этот тип параметризован типом успешного результата. Он является псевдонимом для <code>Validation</code> со строкой в качестве описания неудачи и его параметром в качестве типа успешного значения.</p><p>Давайте последовательно реализуем каждую из этих функций, начнём с get:</p><pre><code class="Scala">def get&#40;req: Req, name: String&#41;: ReqVal&#91;String&#93; =
+  req.param&#40;name&#41;.toOption.toSuccess&#40;
+    Failure&#40;&quot;Missed parameter &quot;+name&#41;&#41;
+</code></pre><p>Она извлекает значение параметра по имени, преобразует его в стандартный <code>Option</code>. И уже его преобразует в <code>Validation</code> с соответствующим сообщением об ошибке. Следующим шагом будет реализация метода <code>getOpt</code>. Его можно сделать уже совсем прямолинейным:</p><pre><code class="Scala">def getOpt&#40;req: Req, name: String&#41;: ReqVal&#91;Option&#91;String&#93;&#93; =
+  Success&#40;req.param&#40;name&#41;.toOption&#41;
+</code></pre><p>Реализацию второй пары методов, подразумевающих парсинг стоит начать с того, что собственно определить парсер:</p><pre><code class="Scala">def parseInt&#40;s: String&#41;: ReqVal&#91;Int&#93; =
+  s.parseInt.fail.map { ne: NumberFormatException =&gt;
+      Filure&#40;&quot;Value &quot;+s+&quot; is not an integer&quot;&#41;
+    }.validation
+</code></pre><p>Здесь используется стандартный метод <code>parseInt</code>, возвращающий <code>Either</code>. При помощи метода <code>fail</code> мы преобразуем его в <a href='https://github.com/scalaz/scalaz/blob/6.0.3/core/src/main/scala/scalaz/Validation.scala#L85'><code>FailProjection</code></a> и преобразуем исключение из стандартной библиотеки Java в читаемое сообщение об ошибке. Кагда это сделано результат преобразуется назад в обычный <code>Validation</code>. <code>FailProjection</code> - это специальная форма <code>Validation</code> с инвертированной в каком-то смысле логикой: он сделан для явного манипулирования ошибкой и неявного игнорирования успешного результата.</p><p>А также вспомогательный метод для применения <code>parseInt</code> и ему подобных к необязательному значению:</p><pre><code class="Scala">def parseOption&#91;T&#93;&#40;parse: String =&gt; ReqVal&#91;T&#93;&#41;&#40;opt: Option&#91;String&#93;&#41;: ReqVal&#91;Option&#91;T&#93;&#93; =
+  opt match {
+    case Some&#40;s&#41; =&gt; parse&#40;s&#41;.lift&#91;Option, T&#93;
+    case None =&gt; success&#40;None&#41;
+  }
+</code></pre><p>Метод <code>lift</code> берёт успешное значение и дополнительно заворачивает его в указанную "оболочку", в данном случае <code>Option</code>.</p><p>Теперь можно написать реализацию <code>getInt</code>:</p><pre><code class="Scala">def getInt&#40;req: Req, name: String&#41;: ReqVal&#91;Int&#93; =
+  get&#40;req, name&#41; flatMap parseInt &#95;
+</code></pre><p>Она предельно проста. Не особо задумываясь мы можем получить и <code>getOptInt</code>:</p><pre><code class="Scala">def getOptInt&#40;req: Req, name: String&#41;: ReqVal&#91;Option&#91;Int&#93;&#93; =
+  getOpt&#40;req, name&#41; flatMap parseOption&#40;s, parseInt &#95;&#41;
+</code></pre><p>Этот метод очень похож структурно на <code>getInt</code>, практически он им и является с той поправкой, что мы трансформируем функцию парсинга для работы с необязательными значениями (продолжая следовать шаблону значение на вход - валидация на выход).</p><p>Итак, следуя простому паттерну значения на вход - <code>Validation</code> на выход мы получили простой в реализации и использовании модуля для типобезопасного извлечения данных из параметров  HTTP запроса. Он может быть легко расширен как добавлением новых поддерживаемых типов (ну например пишем парсер дат какого-то формата и получаем тривиальное в реализации расширение модуля для работы с датами).</p><p>Он не идеален, в нём есть очевидные места дублирования (например необходимость набивать новое семейство функций <code>getX</code>, <code>getOptX</code> для каждого нового типа, да и от обязательности/необязательности значения кажется можно абстрагироваться), однако для затраченного количества умственных усилий мне кажется неплохо.</p><p>Для того, чтобы получить более правдоподобную картину давайте придумаем тестовый пример для этого модуля... Скажем запрос на поиск поста в блоге по названию (параметр запроса "text"), с опцией сортировки по дате публикации (параметр "sort") и указанием ограничения на количество результатов в ответе (параметр <code>limit</code>).</p><p>И пусть у нас уже есть метод которые делает что надо в БД и метод сериализующий список результатов для передачи по HTTP, как-то так:</p><pre><code class="Scala">case class Post&#40;...&#41;
+ 
+sealed abstract class Order
+case object Asc extends Order
+case object Desc extends Order
+ 
+def searchPosts&#40;text: String, order: Option&#91;Sort&#93;, limit: Int&#41;: ReqVal&#91;List&#91;Post&#93;&#93; = {...}
+ 
+def serialize&#40;ReqVal&#91;Object&#93;&#41;: Response = {...}
+</code></pre><p>Давайте подумаем что нам нужно чтобы соединить вместе вышележащую библиотеку для работы с сетевым протоколом и нижележащую функцию работы с БД. Кажется почти всё есть, вот только надо научиться вытаскивать параметр сортировки... А чем порядок хуже числа?</p><pre><code class="Scala">def parseOrder&#40;value: String&#41;: ReqVal&#91;Order&#93; =
+  value match {
+    case &quot;asc&quot;  =&gt; Success&#40;Asc&#41;
+    case &quot;desc&quot; =&gt; Success&#40;Desc&#41;
+    case &#95;      =&gt; Filure&#40;&quot;Illegal order value &quot;+value&#41;
+  }
+ 
+def getOptOrder&#40;req: Req, name: String&#41;: ReqVal&#91;Option&#91;Order&#93;&#93; =
+  getOpt&#40;req, name&#41; flatMap parseOption&#40;s, parseOrder &#95;&#41;
+</code></pre><p>А теперь можно и написать требуемый код склейки, извлекаюий параметры из запроса и передающий их в функцию работы с БД:</p><pre><code class="Scala">def handleSearchPosts&#40;req: Req&#41;: Response =
+  serialize&#40;
+    for {
+      text  &lt;- get&#40;req, &quot;text&quot;&#41;
+      order &lt;- getOptOrder&#40;req, &quot;sort&quot;&#41;
+      limit &lt;- getInt&#40;req, &quot;limit&quot;&#41;
+      data  &lt;- searchPosts&#40;text, order, limit&#41;
+    } yield data
+  &#41;
+</code></pre><p>Вот и всё с первой частью моего введения. Далее я покажу как с помощь всё того-же класса <code>Validation</code> можно организовывать не только цепочки проверок до первой ошибки но и аккумуляцию нескольких возможных ошибок. Очень надеюсь, что он потребует меньшего времени.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags-output/scala/">scala</a>
+    
+    <a href="/tags-output/validation/">validation</a>
+    
+    <a href="/tags-output/scalaz/">scalaz</a>
+    
+    <a href="/tags-output/programming/">programming</a>
+    
+    <a href="/tags-output/error-handling/">error-handling</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts-output/2012-01-18-programming-in-scala/">&laquo; &quot;Programming in Scala&quot;</a>
+        
+        
+        <a class="right" href="/posts-output/2011-10-02-lift-2/">Опыт работы с Lift: часть 2 &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div id="sidebar">
+                
+                <div id="recent">
+                    <h3>Recent Posts</h3>
+                    <ul>
+                        
+                        <li><a href="/posts-output/2019-08-23-understanding-computation/">Understanding computation</a></li>
+                        
+                        <li><a href="/posts-output/2019-06-03-elements-of-programming/">Начала программирования</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-27-web-improved/">The HTML we shouldn&#39;t ever have</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-23-on-interviews/">Про интервью</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-27-fire-and-motion-2019/">Fire and motion 2019</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-13-conditional-failures/">Странный гайд по исключениям от гуавы</a></li>
+                        
+                    </ul>
+                </div>
+                
+                
+                <div id="tags">
+                    <h3>Tags</h3>
+                    <div class="tag-block">
+                    
+                    <a href="/tags-output/books/">books</a>
+                    
+                    <a href="/tags-output/technology/">technology</a>
+                    
+                    <a href="/tags-output/scala/">scala</a>
+                    
+                    <a href="/tags-output/dsls/">dsls</a>
+                    
+                    <a href="/tags-output/clojure/">clojure</a>
+                    
+                    <a href="/tags-output/web/">web</a>
+                    
+                    <a href="/tags-output/vscode/">vscode</a>
+                    
+                    <a href="/tags-output/lift/">lift</a>
+                    
+                    <a href="/tags-output/conferences/">conferences</a>
+                    
+                    <a href="/tags-output/process/">process</a>
+                    
+                    <a href="/tags-output/validation/">validation</a>
+                    
+                    <a href="/tags-output/TG repost/">TG repost</a>
+                    
+                    <a href="/tags-output/commons-logging/">commons-logging</a>
+                    
+                    <a href="/tags-output/java/">java</a>
+                    
+                    <a href="/tags-output/HR/">HR</a>
+                    
+                    <a href="/tags-output/scalaz/">scalaz</a>
+                    
+                    <a href="/tags-output/haskell/">haskell</a>
+                    
+                    <a href="/tags-output/racket/">racket</a>
+                    
+                    <a href="/tags-output/log4j/">log4j</a>
+                    
+                    <a href="/tags-output/task management/">task management</a>
+                    
+                    <a href="/tags-output/languages/">languages</a>
+                    
+                    <a href="/tags-output/programming/">programming</a>
+                    
+                    <a href="/tags-output/jboss/">jboss</a>
+                    
+                    <a href="/tags-output/links/">links</a>
+                    
+                    <a href="/tags-output/planning/">planning</a>
+                    
+                    <a href="/tags-output/sublime/">sublime</a>
+                    
+                    <a href="/tags-output/lisp/">lisp</a>
+                    
+                    <a href="/tags-output/error-handling/">error-handling</a>
+                    
+                    <a href="/tags-output/ide/">ide</a>
+                    
+                    <a href="/tags-output/exceptions/">exceptions</a>
+                    
+                    <a href="/tags-output/interviews/">interviews</a>
+                    
+                    <a href="/tags-output/thoughts/">thoughts</a>
+                    
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <footer>Copyright &copy; 2019 Alexey Zlobin
+        <p style="text-align: center;">Powered by <a href="http://cryogenweb.org">Cryogen</a></p></footer>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
