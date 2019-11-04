@@ -136,12 +136,10 @@ pre code {
     white-space: pre;
 }
 
-code {
-    color: #428bca;
-}
-
 pre, code, .hljs {
-    background-color: #f7f9fd;
+    background-color: #fff;
+    color: #0048ab;
+    font-size: 100%;
 }
 
 @media (min-width: 768px) {
