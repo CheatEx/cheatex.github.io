@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>cheatex: Структура и интерпретация компьютерных программ</title>
+    <link rel="canonical" href="https://cheatex.cc/posts-output/2011-02-16-sicp/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700" rel="stylesheet"
+          type="text/css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/magula.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">cheatex</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li ><a href="/">Home</a></li>
+                <li
+                ><a href="/archives/">Archives</a></li>
+                
+                <li><a href="/feed.xml">RSS</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+</nav>
+
+
+<div class="container">
+
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div id="content">
+                
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">February 16, 2011</div>
+        
+    </div>
+    <h2>Структура и интерпретация компьютерных программ</h2>
+</div>
+<div>
+    
+    <p>Вот я наконец и дочитал эту замечательную книгу. Ну точнее постановил считать её дочитанной, так как предпоследняя глава растянулась чуть ли не на полгода, а последняя обещала и того дольше.</p><p>Процесс и правда изрядно затянулся. Я начал её читать ещё в сентябре позапрошлого (2009) года. И вот только пара недель как закончил. Причина очень проста: книга явно требует подходящего настроения и регулярно читать не получалось хронически. Процесс и сам по себе получился не обычным. Я начал её читать с экрана, в виде английской pdf'ки. Однако, когда я был где-то на середине вышел <a href='http://www.books.ru/shop/books/751828'>очередной тираж</a> русского издания и я без раздумий добыл себе бумажный экземпляр на русском.</p><p>И наверно единственный раз не пожалел, что связался с русским переводом. Надо отдать должное переводчикам - это один из лучших технических переводов, что я видел. И без сомнения наиболее качественный из выпущенного в последние годы. Очень тщательный, последовательный подход к терминологии. Авторы всегда дают оригинальное написание вводя новый термин, но далее в книге используют один и тот же русский вариант. Нет ни диких транслитераций, ни странных оборотов в три слова. Я практически прозрачно переключился с английской версии на русскую.</p><p>Ещё важный момент, все примеры в книге выполнены на LISPе (а точнее Scheme). Годика три назад, я наверно по этой причине сделал бы из книжки костер и сплясал бы вокруг него. Однако изучение Smalltalk и Python (а точнее отзывов их авторов о влиянии LISP) в последствии немного сгладили мое отношение к скобочкам. Нельзя не признать, что для первых глав, где демонстрируется куча разных подходов к программированию, он является пожалуй оптимальным выбором. Однако длинные куски кода на LISPе всё-таки страшно выглядят, понимание многих примеров из последних глав отнимало много времени, в основном на вычленение стандартных конструкций из мета-кодировки в скобках.</p><p>Итак, о чём же собственно книга.</p><p>Первая глава, "Построение абстракций с помощью процедур", рассказывает о базовых техниках функционального программирования. В ней вводятся понятие процедуры, её вычисления, объясняется семантика лямбда-исчисления. Также тут рассматриваются "формы" вычислительных процессов, и то какие потребности в памяти и процессорном времени они порождают. В конце показываются функции высокого порядка и лямбда-выражения, с примерами применения.</p><p>Вторая глава, "Построение абстракций с помощью данных", рассказывает о том, что такое данные, как их можно унифицировать (на уровне доступа) с процедурами и почему это бывает важно. Попутно вводится понятие структуры данных и рассматриваются примеры, вроде пар, списков и т.п. Описывается свойство замкнутости для структур данных (программ?), и демонстрируется его важность в дизайне программ. Заканчивается глава по сути кратким введением в ООП, а точнее подробным рассмотрением идеи программирования в "стиле передачи сообщений". Показываются ЛИСПовые техники реализации классов, объектов, методов. Последнее без сомнения лучшее введение в ОО-программирование из всех что я видел. В основном благодаря тому, что мир объектов и сообщений строится вместе с читателем, а не приводится как данность (тут я немного забежал вперёд - достраивается он уже в следующей главе).</p><p>Третья глава, "Модульность, объекты и состояние", вводит в стройный мир асбтрактных вычислений, выстроенный в первых главах, проблемы реального мира: присваивание и время. Примерно половина главы посвящена тому как эти явления аккуратно моделировать в языке программирования, и примерно половина конкретным техникам программирования. В этой главе особо порадовал раздел про потоки, который был прочитан с учётом возвратов из следующей главы и перелистываний на досуге раза три. Совершенно замечательный пример простого решения массы сложных проблем, настоятельно рекомендую для прочтения, даже если за всю книгу лень браться.</p><p>Четвёртая глава, с жутким названием "Метаязыковая абстракция", посвящена созданию интерпретаторов языков программирования. В ней сначала подробно расписывается архитектура и реализация интерпретатора самой Scheme, а затем вносится в него ряд изменений, для поддержки экзотических методов программирования. Меня, в контексте аспирантуры, конечно больше всего заинтересовал логический интерпретатор (пролог в скобочном синтаксисе), который наверно единственный я более-менее до конца понял.</p><p>Ну и на пятую главу, "Вычисления на регистровых машинах", я забил :)</p><p>Надо отметить, что книга доставила массу удовольствия в процессе прочтения. Нельзя сказать, что всё написанное там было для меня откровением, но этот материал копился у меня в голове годами, из обрывков статей, блогпостов и собственного печального опыта... В общем стоило ей попасть мне в руки курсе на четвёртом.</p><p>Вообще книга заставила много раз подряд проклясть родной универ. Всё-таки способность отечественных преподавателей сделать из даже самых интересных и полезных знаний невнятную, серую, трудноперевариваемую массу просто поражает. Вспомнился и курс функционального программирования, двухмесячный, с быстрым рассмотрением синтаксиса и стандартных функций, какого-то древнего ДОСовского ЛИСПА, увенчанный курсовиком, в котором нужно было сделать базу данных то ли студентов на кафедре, то ли телевизоров на складе. Курс, на котором понятие неизменяемой структуры данных даже не звучало, не говоря уже про то, чтобы объяснить выученному на паскале потоку как с ними работать. И курс объектно-ориентированного программирования, без единого упоминания о передаче сообщений.</p><p>Ну да ладно, напоследок, по традиции, критическое замечание к сабжу. В последних главах очень мало диаграмм к сложным примерам кода. Хорошее именование и форматирование это конечно хорошо. Но всё-таки картинки - лучший способ доносить архитектуру до умственно не далёких читателей вроде меня.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags-output/books/">books</a>
+    
+    <a href="/tags-output/thoughts/">thoughts</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts-output/2011-03-11-on-examples/">&laquo; Об учебных примерах</a>
+        
+        
+        <a class="right" href="/posts-output/2011-01-13-java-seminar/">Провёл семинар по Java &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div id="sidebar">
+                
+                <div id="recent">
+                    <h3>Recent Posts</h3>
+                    <ul>
+                        
+                        <li><a href="/posts-output/2019-11-10-test-classification/">Классификация тестов</a></li>
+                        
+                        <li><a href="/posts-output/2019-08-23-understanding-computation/">Understanding computation</a></li>
+                        
+                        <li><a href="/posts-output/2019-06-03-elements-of-programming/">Начала программирования</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-27-web-improved/">The HTML we shouldn&#39;t ever have</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-23-on-interviews/">Про интервью</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-27-fire-and-motion-2019/">Fire and motion 2019</a></li>
+                        
+                    </ul>
+                </div>
+                
+                
+                <div id="tags">
+                    <h3>Tags</h3>
+                    <div class="tag-block">
+                    
+                    <a href="/tags-output/books/">books</a>
+                    
+                    <a href="/tags-output/technology/">technology</a>
+                    
+                    <a href="/tags-output/scala/">scala</a>
+                    
+                    <a href="/tags-output/dsls/">dsls</a>
+                    
+                    <a href="/tags-output/development/">development</a>
+                    
+                    <a href="/tags-output/clojure/">clojure</a>
+                    
+                    <a href="/tags-output/web/">web</a>
+                    
+                    <a href="/tags-output/vscode/">vscode</a>
+                    
+                    <a href="/tags-output/lift/">lift</a>
+                    
+                    <a href="/tags-output/conferences/">conferences</a>
+                    
+                    <a href="/tags-output/process/">process</a>
+                    
+                    <a href="/tags-output/validation/">validation</a>
+                    
+                    <a href="/tags-output/TG repost/">TG repost</a>
+                    
+                    <a href="/tags-output/commons-logging/">commons-logging</a>
+                    
+                    <a href="/tags-output/java/">java</a>
+                    
+                    <a href="/tags-output/HR/">HR</a>
+                    
+                    <a href="/tags-output/scalaz/">scalaz</a>
+                    
+                    <a href="/tags-output/haskell/">haskell</a>
+                    
+                    <a href="/tags-output/racket/">racket</a>
+                    
+                    <a href="/tags-output/log4j/">log4j</a>
+                    
+                    <a href="/tags-output/task management/">task management</a>
+                    
+                    <a href="/tags-output/languages/">languages</a>
+                    
+                    <a href="/tags-output/programming/">programming</a>
+                    
+                    <a href="/tags-output/jboss/">jboss</a>
+                    
+                    <a href="/tags-output/links/">links</a>
+                    
+                    <a href="/tags-output/git/">git</a>
+                    
+                    <a href="/tags-output/teaching/">teaching</a>
+                    
+                    <a href="/tags-output/planning/">planning</a>
+                    
+                    <a href="/tags-output/sublime/">sublime</a>
+                    
+                    <a href="/tags-output/communities/">communities</a>
+                    
+                    <a href="/tags-output/lisp/">lisp</a>
+                    
+                    <a href="/tags-output/error-handling/">error-handling</a>
+                    
+                    <a href="/tags-output/ide/">ide</a>
+                    
+                    <a href="/tags-output/exceptions/">exceptions</a>
+                    
+                    <a href="/tags-output/interviews/">interviews</a>
+                    
+                    <a href="/tags-output/test/">test</a>
+                    
+                    <a href="/tags-output/thoughts/">thoughts</a>
+                    
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <footer>Copyright &copy; 2019 Alexey Zlobin
+        <p style="text-align: center;">Powered by <a href="http://cryogenweb.org">Cryogen</a></p></footer>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>

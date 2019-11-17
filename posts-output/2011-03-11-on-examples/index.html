@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>cheatex: Об учебных примерах</title>
+    <link rel="canonical" href="https://cheatex.cc/posts-output/2011-03-11-on-examples/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700" rel="stylesheet"
+          type="text/css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/magula.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">cheatex</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li ><a href="/">Home</a></li>
+                <li
+                ><a href="/archives/">Archives</a></li>
+                
+                <li><a href="/feed.xml">RSS</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+</nav>
+
+
+<div class="container">
+
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div id="content">
+                
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">March 11, 2011</div>
+        
+    </div>
+    <h2>Об учебных примерах</h2>
+</div>
+<div>
+    
+    <p> Подготовка к продолжению семинара по Java для OSLL/АУ заставила снова глубоко озадачиться построением учебных примеров на тему программирования (кстати, для кого рассказываю и какой уровень ожидается я так и не понял, с одной стороны там рассказывают какой то реальный rocket science мужики зашкаливающей суровости, с другой стороны позвали тупо меня рассказать про тупо фичи Java). Тут ещё наложился <a href='https://groups.google.com/group/scala-user/browse_thread/thread/3bcb9d3d56dd83f7/'>затяжной флейм</a> в одной занимательной рассылке. В этой связи я решил выписать важные для меня критерии качества для учебного примера на тему программирования. Для себя точку отсчёта зафиксировать, да может ещё кому интересно будет.</p><ol><li>Доступность. Пример должен быть доступен для понимания с минимумом затрат. Требования к теоретическим познаниям должны быть собраны в явные prequisities. Когда в середине, а то и в примечаниях в конце говорят "Так, а вот тут вам нужно (было) прочитать [1], [2], [3] и вот тот учебник." - материал идёт лесом.</li><li>Сфокусированность. В рамках примера должна решаться одна и только одна задача. Если проблема состоит в комбинировании нескольких решений, то мы сначала делаем каждое решение, потом отдельным пунктом пробуем их сочетать (не до маразма естественно - пример на абстракцию данных с полярной и декартовой точкой без предварительного отдельного их описания вполне допустим).</li><li>Простота. В примере должно так мало сущностей, как это возможно. Очень плохо, когда появляются примеры вроде: "Мы реализуем подсистему логирования с помощью аспектно-ориентированного программирования, но ещё нам потребуется IoC контейнер для включения аспектов".</li><li>Изолированность. Пример должен задействовать минимальное количество (в идеале одну) фичей языка и/или техник программирования. Если речь идёт о каком-то последовательном изложении (например введении в ЯП) совершенно недопустимы ссылки вперёд. Граница с пунктом 2 не очень чёткая. Я их разделяю так: простота связана с требованиями к окружению (например "мы внутри IoC контейнера" или "у нас есть парсер JSON"), изолированность связана с инструментарием, привлекаемым непосредственно к решению задачи (например "мы используем обобщённые типы" или "мы используем механизм макросов").</li><li>Реалистичность. читатель не должен проводить бессонные ночи ищя ответ на вопрос "зачем?". Знание, не подкреплённое практикой или хорошей идеей как эту практику можно устроить, быстро теряется и затирается чем нибудь более актуальным. Чисто эмпирически мне кажется, что пример должен попадать в одну из следующих категорий:<ol><li>Часть большего и жизненного примера (например "мы пишем графический редактор и нам нужна унифицированная обработка фигур" - "нас спасёт паттерн композит").</li><li>Какое-то решение общей проблемы программирования ("нам нужно абстрагировать вычисление расстояния между точками от представления их в памяти") с которой гарантированно сталкивался каждый.</li><li>Общеупотребимый алгоритмом или структура данных (например "решение комбинаторной задачи" или "представление графа в памяти").</li></ol></li><li>Масштабируемость. В идеале пример должен быть доведён до конца в несколько итераций, с целью показать несколько доступных уровней глубины. От простого (задача едва-едва решена) и узкого решения к более сложному (максимальному проходящему по критериям 2 и 3) и полному. Соответственно и при практическом применении рассматриваемого инструмента остаётся возможность подвигать ползунок.</li><li>Содержательность. Что-то вроде возможности ответить на вопрос "зачем?" на самом высоком уровне. Пробовал сформулировать по разному, но кажется как не крути получается критерий-солянка:<ol><li>Не велик. Плохо когда что-то делается, а в конце говорится "на самом деле взрослые дяди это уже решили в стандартной библиотеке и лучше пользоваться их решением". Оставляет смешанное чувство собственной убогости ("действительно годное решение мне не понять?") и низкого качества материала ("то есть то же самое можно сделать лучше?"). Но это всё-равно лучше, чем когда такого примечания нет :)</li><li>Связь с каким-то юзкейсом верхнего уровня (очевидно что 6. а) избавляет от этой проблемы в принципе).</li></ol></li></ol><p>Надо заметить, что это касается технических материалов для практиков. Научные статьи и обзоры по понятным причинам в эту шкалу не вписываются. А те люди которые легко переживают отсутствие таких примеров без сомнения должны бросать неблагодарное инженерное дело и релоцироваться в класс учёных. С другой стороны я недавно видел пример того, что в умелых руках даже казалось бы безнадёжно сложные и теоретизированные вопросы находят прекрасную иллюстративную основу, для сравнения: куча введений в продолжения от скалохаскелистов <a href='http://dcsobral.blogspot.com/2009/07/delimited-continuations-explained-in.html'>&#91;1&#93;</a>, <a href='http://jim-mcbeath.blogspot.com/2010/08/delimited-continuations.html'>&#91;2&#93;</a>, <a href='http://suereth.blogspot.com/2010/03/how-you-should-think-about-delimited.html'>&#91;3&#93;</a> и <a href='http://www.dabeaz.com/coroutines/'>одно от питонщика</a>.</p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags-output/teaching/">teaching</a>
+    
+    <a href="/tags-output/thoughts/">thoughts</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts-output/2011-03-27-jcp/">&laquo; Java concurrency in practice</a>
+        
+        
+        <a class="right" href="/posts-output/2011-02-16-sicp/">Структура и интерпретация компьютерных программ &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div id="sidebar">
+                
+                <div id="recent">
+                    <h3>Recent Posts</h3>
+                    <ul>
+                        
+                        <li><a href="/posts-output/2019-11-10-test-classification/">Классификация тестов</a></li>
+                        
+                        <li><a href="/posts-output/2019-08-23-understanding-computation/">Understanding computation</a></li>
+                        
+                        <li><a href="/posts-output/2019-06-03-elements-of-programming/">Начала программирования</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-27-web-improved/">The HTML we shouldn&#39;t ever have</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-23-on-interviews/">Про интервью</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-27-fire-and-motion-2019/">Fire and motion 2019</a></li>
+                        
+                    </ul>
+                </div>
+                
+                
+                <div id="tags">
+                    <h3>Tags</h3>
+                    <div class="tag-block">
+                    
+                    <a href="/tags-output/books/">books</a>
+                    
+                    <a href="/tags-output/technology/">technology</a>
+                    
+                    <a href="/tags-output/scala/">scala</a>
+                    
+                    <a href="/tags-output/dsls/">dsls</a>
+                    
+                    <a href="/tags-output/development/">development</a>
+                    
+                    <a href="/tags-output/clojure/">clojure</a>
+                    
+                    <a href="/tags-output/web/">web</a>
+                    
+                    <a href="/tags-output/vscode/">vscode</a>
+                    
+                    <a href="/tags-output/lift/">lift</a>
+                    
+                    <a href="/tags-output/conferences/">conferences</a>
+                    
+                    <a href="/tags-output/process/">process</a>
+                    
+                    <a href="/tags-output/validation/">validation</a>
+                    
+                    <a href="/tags-output/TG repost/">TG repost</a>
+                    
+                    <a href="/tags-output/commons-logging/">commons-logging</a>
+                    
+                    <a href="/tags-output/java/">java</a>
+                    
+                    <a href="/tags-output/HR/">HR</a>
+                    
+                    <a href="/tags-output/scalaz/">scalaz</a>
+                    
+                    <a href="/tags-output/haskell/">haskell</a>
+                    
+                    <a href="/tags-output/racket/">racket</a>
+                    
+                    <a href="/tags-output/log4j/">log4j</a>
+                    
+                    <a href="/tags-output/task management/">task management</a>
+                    
+                    <a href="/tags-output/languages/">languages</a>
+                    
+                    <a href="/tags-output/programming/">programming</a>
+                    
+                    <a href="/tags-output/jboss/">jboss</a>
+                    
+                    <a href="/tags-output/links/">links</a>
+                    
+                    <a href="/tags-output/git/">git</a>
+                    
+                    <a href="/tags-output/teaching/">teaching</a>
+                    
+                    <a href="/tags-output/planning/">planning</a>
+                    
+                    <a href="/tags-output/sublime/">sublime</a>
+                    
+                    <a href="/tags-output/communities/">communities</a>
+                    
+                    <a href="/tags-output/lisp/">lisp</a>
+                    
+                    <a href="/tags-output/error-handling/">error-handling</a>
+                    
+                    <a href="/tags-output/ide/">ide</a>
+                    
+                    <a href="/tags-output/exceptions/">exceptions</a>
+                    
+                    <a href="/tags-output/interviews/">interviews</a>
+                    
+                    <a href="/tags-output/test/">test</a>
+                    
+                    <a href="/tags-output/thoughts/">thoughts</a>
+                    
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <footer>Copyright &copy; 2019 Alexey Zlobin
+        <p style="text-align: center;">Powered by <a href="http://cryogenweb.org">Cryogen</a></p></footer>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
