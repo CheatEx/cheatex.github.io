@@ -2,8 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
     <meta charset="utf-8"/>
-    <title>cheatex: Странный гайд по исключениям от гуавы</title>
-    <link rel="canonical" href="https://cheatex.cc/posts-output/2019-02-13-conditional-failures/">
+    <title>cheatex: Posts Tagged &quot;design&quot;</title>
+    <link rel="canonical" href="https://cheatex.cc/tags-output/design/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700" rel="stylesheet"
           type="text/css">
@@ -46,43 +46,17 @@
         <div class="col-lg-9">
             <div id="content">
                 
-<div id="post">
-    <div class="post-header">
-    <div id="post-meta" class="row">
-        <div class="col-lg-6">February 13, 2019</div>
-        
+<div id="posts-by-tag">
+    <div id="page-header">
+        <h2>Posts Tagged &quot;design&quot;</h2>
     </div>
-    <h2>Странный гайд по исключениям от гуавы</h2>
-</div>
-<div>
+    <ul>
     
-    <p>Наткнулся тут на <a href='https://github.com/google/guava/wiki/ConditionalFailuresExplained'>гайд по пользованию исключениями в Guava</a>, и видимо в джавовских проектах гугла.</p><p>Первое что бросается в глаза Rationale пропущен. Второе - 6 вариантов ответа для фундаментального вопроса это реально дохера. Если вчитаться тоже есть вопросы.</p><p>Мне показалось что основная проблема которая решается применением этой конвенции - поиск виноватых. Краткое изложение в табличке целиком про кто "messed up".</p><p>Не понятно зачем сюда втянут exceptional result. Типа контракт штуки такой, ожидаемое поведение. Test assertion его частный случай, ничего требующего выделения отдельного пункта не сказано. Дальше в табличке предлагают <code>AssertionError</code> для него, видиом чтобы по ошибке не ловить падение теста вместо своего исключения. Но это стоило прояснять явно и в формате примечания к exceptional result.</p><p><i>Precondition</i> check важный частный случай, всё-таки это ситуация когда у кода нет в принципе возможности сделать задуманое. Можно согласиться.</p><p><i>Assertion</i> - понятно, поддерживаю.</p><p><i>Verification check</i> пункт про поиск виноватых и пинг-понг. Никакой разницы почему вмерло нет, нарушено ожидание, действуем по плану assertion. А тут добавлен отдельный пункт и класс с утилитами под него.</p><p><i>Impossible-condition</i> check вообще не понимаю зачем нужен, всё еще assertion.</p><p>В этой системе есть проблема: легко ловить что-то тебе не предназначенное. Если есть контракты с исключениями то в код который их использует может приехать и <i>precondition check</i> и <i>verification check</i>. Чтобы работало ко всей конструкции надо еще добавлять правило в духе "не ловим <code>Exception</code> и <code>RuntimeException</code> в прикладном коде". И правило какой код уже можно считать системным. А потом еще правило про catch который на самом деле finally. Ну вы поняли.</p><p>Вывод: там тоже всё плохо. На Java надо писать без ошибок или не писать вообще.</p>
-</div>
-
-<div id="post-tags">
-    <b>Tags: </b>
+        <li>
+            <a href="/posts-output/2010-07-12-complexity-vs-duplication/">Сложность vs дублирование</a>
+        </li>
     
-    <a href="/tags-output/TG repost/">TG repost</a>
-    
-    <a href="/tags-output/java/">java</a>
-    
-    <a href="/tags-output/exceptions/">exceptions</a>
-    
-</div>
-
-
-    <div id="prev-next">
-        
-        <a href="/posts-output/2019-02-27-fire-and-motion-2019/">&laquo; Fire and motion 2019</a>
-        
-        
-        <a class="right" href="/posts-output/2018-12-26-on-vs-code/">Про VS Code &raquo;</a>
-        
-    </div>
-
-    
-
-
+    </ul>
 </div>
 
             </div>
