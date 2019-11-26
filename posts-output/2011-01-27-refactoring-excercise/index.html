@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <title>cheatex: Немного поупражнялся в рефакторинге</title>
+    <link rel="canonical" href="https://cheatex.cc/posts-output/2011-01-27-refactoring-excercise/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700" rel="stylesheet"
+          type="text/css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="/css/magula.min.css" rel="stylesheet" type="text/css" />
+    <link href="/css/screen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+
+
+<nav class="navbar navbar-default">
+    <div class="container">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/">cheatex</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+            <ul class="nav navbar-nav navbar-right">
+                <li ><a href="/">Home</a></li>
+                <li
+                ><a href="/archives/">Archives</a></li>
+                
+                <li><a href="/feed.xml">RSS</a></li>
+            </ul>
+        </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+</nav>
+
+
+<div class="container">
+
+
+    <div class="row">
+        <div class="col-lg-9">
+            <div id="content">
+                
+<div id="post">
+    <div class="post-header">
+    <div id="post-meta" class="row">
+        <div class="col-lg-6">January 27, 2011</div>
+        
+    </div>
+    <h2>Немного поупражнялся в рефакторинге</h2>
+</div>
+<div>
+    
+    <p>Пару дней назад увидел <a href='http://eao197.blogspot.com/2011/01/progflame-scala.html'>пост на крайне актуальную тему</a> в одном занимательном блоге. Суть: автор увидел кусок говнокода на Scala, переписал в цивильном виде, сделал аналог переписанного на Java и сравнил. По итогам сомнения он пришёл к выводу что разница в 30 строк кода из 100 не существенна для выбора языка, а идейной разницы никакой нет.</p><p>Надо сказать, что пост задел практически за живое, ибо совсем недавно я занимался валидацией запросов и авторизацией пользователей как раз на Scala :) Так что что мне сразу бросилась в глаза пара некорректных мест в сравнении, которые я и попробую дальше подробно описать.</p><p>Во-первых, утверждается, что два текста программ, приводимых в конце, одинаковы. И один имеет не лучшую надёжность, чем другой. Это просто не верно. Дело в том, что несмотря на очень похожую структуру Scala-код имеет на несколько порядков большую "защиту от дурака". Для обеспечения сравнимого уровня пассивной защиты от ошибок на Java требовалось-бы написать как-то так:</p><pre><code class="scala">@rest.Method&#40;httpMethod = Array&#40;POST&#41;&#41; 
+public void login&#40;final rest.Request request, 
+      @rest.Param&#40;name = &quot;login&quot;&#41; @Nullable final String login, 
+      @rest.Param&#40;name = &quot;password&quot;&#41; @Nullable final String password&#41; 
+{ 
+   debug&#40;&quot;accessing login... &quot; + login&#41;; 
+ 
+   if&#40; login == null || password == null &#41; 
+      respond&#40;UNAUTHORIZED, &quot;You should provide login and password&quot;&#41;; 
+   else
+      doLogin&#40;request, login, password&#41;; 
+} 
+ 
+private void doLogin&#40;@NotNull final rest.Request request, @NotNull final String login, @NotNull final String password&#41; 
+{ 
+   final UserInfo user = AccountsStorage.find&#40;login&#41;; 
+   if&#40; user == null &#41; 
+      handleUnknownUserLogin&#40;&#41;; 
+   else
+      &#40;new KnownUserLoginHandler&#40;request, login, password, user&#41;&#41;.handle&#40;&#41;; 
+} 
+</code></pre><p>И прикрутить сверху проверку статическим анализатором кода. Говорить о читабельности кода после такого преобразования не приходится.</p><p>Во-вторых приводится аргумент, что разработчик, с учётом возможностей современных IDE будет руками писать кода Java ничуть не больше(Справедливости ради стоит заметить, что скорее всего даже меньше). Аргумент не очень хороший, в контексте того что код ведь обычно не столько пишут, сколько читают. У меня на строку написанного кода приходится минимум сотня прочитанного, и с пять сотен бегло просмотренного. Во время работы каждый программист возвращается к ранее сделанному много раз и шум вроде повторения списка аттрибутов класс четыре раза в разных обрамлениях мягко говоря не помогает понять свою или чужую мысль.</p><p>В-третьих, в примере используется внешняя библиотека (для работы с http судя по всему) совершенно не приспособленная к языку и не использующая его возможностей. Как на образец удачной, основанной на полноценном использовании языка библиотеки можно посмотреть например на Circumflex Web Framework.</p><p>Ну и в-четвёртых собственно выразительные возможности скалы используется крайне скупо и внутри самого решения. Естественно, что если писать в точности как на Java то и никаких отличий не обнаружится. В доказательство этого утверждения я попробую решить эту-же задачу в немного более скальном стиле.</p><p>Итак, что мне не нравится в предложенном решении и что я собираюсь улучшить:</p><ol><li>Сквозная связанность всего кода авторизации с классами внешней библиотеки. Не то чтобы переезды целых приложений с одного фреймворка на другой являются обычным делом, но когда они всё-таки происходят...</li><li>Весь алгоритм по сути выполняет простой выбор: авторизовать пользователя или выдать сообщение о том, почему в авторизации отказано. В предложенном решении для того чтобы это понять требуется отсмотреть всю сотню строк кода, а исключить другие (ошибочные) варианты реакции весьма затруднительно.</li><li>Сам алгоритм авторизации имеет преимущественно линейную структуру:<ul><li>проверить, что логин и пароль предоставлены;</li><li>найти соответствующие учётные данные в БД;</li><li>проверить, что пользователь имеет право на вход;</li><li>аутентифицировать по паролю.</li></ul></li></ol><p>Несмотря на это код с самого начала начинает ветвиться, полностью скрывая основную идею.</p><p>Приступим. Вся процедура авторизации имеет своим результатом или учётные данные авторизованного пользователя, или сообщение об ошибке. Так и запишем:</p><pre><code class="scala">type LoginResult = Either&#91;UserInfo, String&#93;
+def Success&#91;T, E&#93; = Left&#91;T, E&#93; &#95;
+def Failure&#91;T, E&#93; = Right&#91;T, E&#93; &#95;
+</code></pre><p>Сама процедура логина получает возможно предоставленные данные, и возвращает описанный выше результат:</p><pre><code class="scala">def login&#40;login: Option&#91;String&#93;, password: Option&#91;String&#93;&#41;: LoginResult = ...
+</code></pre><p>Теперь можно отвлечься от деталей процедуры логина и заняться обработкой результатов</p><pre><code class="scala">@rest.Method&#40;httpMethod = Array&#40;POST&#41;&#41;
+def login&#40;request: rest.Request,
+    @rest.Param&#40;name = &quot;login&quot;&#41;
+    loginParam: String,
+    @rest.Param&#40;name = &quot;password&quot;&#41;
+    passwordParam: String&#41;: Unit =
+  login&#40;Option&#40;loginParam&#41;, Option&#40;passwordParam&#41;&#41; match {
+    case Left&#40;user&#41; =&gt;
+      request.session&#40;&quot;user&quot;&#41; = user
+    case Right&#40;message&#41; =&gt;
+      respond&#40;UNAUTHORIZED, message&#41;
+  }
+</code></pre><p>Здесь важно во-первых что количество вариантов внешней реакции системы явно ограничивается. Во вторых, что на этом уровне заканчиваются все связи с фреймворком, включая возможные null'ы в параметрах вызова (именно по этому я не стал делать процедуры, аналогичной setupSuccessfulAuthResult - она просто не создавала бы никакой полезной абстракции).</p><p>Дальше хочется заняться собственно процедурой логина, но стоит снова оставить её в стороне и описать все шаги авторизации. Очевидно, что каждый из шагов будет иметь то-же результат, что и процедура логина в целом, однако будет требовать разных данных на вход. Можно записать каждый шаг в виде отдельной функции:</p><pre><code class="scala">def findUser&#40;login: String&#41;: LoginResult =
+  AccountsStorage.find&#40;login&#41;.toLeft&#40; &quot;User not found&quot; &#41;
+ 
+def checkUser&#40;user: UserInfo&#41;: LoginResult =
+  if &#40;user.inactive&#41; Failure&#40;&quot;Account is inactive&quot;&#41;
+  else Success&#40;user&#41;
+ 
+def doLogin&#40;user: UserInfo, login: String, password: String&#41;: LoginResult =
+  if &#40;user.authScheme == &quot;PETRIVKA&quot;&#41;
+    handlePetrivkaAuthSchemeLogin&#40;user, password&#41;
+  else
+    handleUsualAuthSchemeLogin&#40;user, login, password&#41;
+ 
+def handlePetrivkaAuthSchemeLogin&#40;user: UserInfo, password: String&#41;: LoginResult =
+  if&#40; user.passwordMatches&#40;password&#41; &#41; Success&#40;user&#41;
+  else Failure&#40;&quot;Authentication failed&quot;&#41;
+ 
+def handleUsualAuthSchemeLogin&#40;user: UserInfo, login: String, password: String&#41; =
+  AccessStorage.access.auth&#95;configs.find&#40;&#95;.key == user.authScheme&#41; match {
+    case Some&#40;scheme&#41; =&gt;
+      log.debug&#40;&quot;authenticating with &quot; + scheme.command&#41;
+      val exec = Runtime.getRuntime.exec&#40;
+          scheme.command replace&#40;&quot;{login}&quot;, login&#41; replace&#40;&quot;{password}&quot;, password&#41;&#41;
+      if&#40; exec.waitFor == 0 &#41;
+        Success&#40;user&#41;
+      else
+        Failure&#40;&quot;Authentication within &quot; + scheme + &quot; failed&quot;&#41;
+    case None =&gt; Failure&#40;&quot;Unknown authentication scheme: &quot; + user.authScheme&#41;
+  }
+</code></pre><p>Если немного помедитировать на handleUsualAuthSchemeLogin, то наверняка можно её сократить и упростить, но это мало повлияет на основную идею решения.</p><p>Теперь осталось самое простое - собрать все шаги вместе. Совершенно случайно в Scala завалялась подходящая конструкция :)</p><pre><code class="scala">def login&#40;login: Option&#91;String&#93;, password: Option&#91;String&#93;&#41;: LoginResult =
+  for &#40;login &lt;- login.toLeft&#40; &quot;You should provide login&quot; &#41;.left;
+       password &lt;- password.toLeft&#40; &quot;You should provide password&quot; &#41;.left;
+       user &lt;- findUser&#40;login&#41;.left;
+       checkedUser &lt;- checkUser&#40;user&#41;.left;
+       loggedUser &lt;- doLogin&#40;checkedUser, login, password&#41;.left
+  &#41; yield loggedUser
+</code></pre><p>Не вдаваясь в детали, скажу что выражение for делает очередной шаг и проверяет результат: если он успешен то продолжает цепочку, если неуспешен то прерывает цепочку, возвращая неудачу. То какой вариант сейчас считается успешным мы сообщаем в конце каждого выражения, я соответственно всегда считаю успешным левый. Метод toLeft у класса Option преобразует его в Either, говоря куда помещать существующее значение и чем заменять несуществующее.</p><p>Вот и всё. Данный пример исправляет отмеченные ранее недостатки, при этом имеет более простую (7 элементов против 9) и близкую к задаче структуру. Также стоит добавть, что он имеет и существенный недостаток: двойную терминологию. В одних местах используется пара Success-Failure, в других Left-Right. Однако это имеет и положительный эффект - интерпретация результатов всегда отличима от их создания.</p><p><a href='https://gist.github.com/CheatEx/2a76c06b3bf5480e62708161a6957b05'>полный исходник с кое-какими моками для компилябельности</a></p>
+</div>
+
+<div id="post-tags">
+    <b>Tags: </b>
+    
+    <a href="/tags-output/scala/">scala</a>
+    
+    <a href="/tags-output/java/">java</a>
+    
+    <a href="/tags-output/refactoring/">refactoring</a>
+    
+</div>
+
+
+    <div id="prev-next">
+        
+        <a href="/posts-output/2011-02-16-sicp/">&laquo; Структура и интерпретация компьютерных программ</a>
+        
+        
+        <a class="right" href="/posts-output/2011-01-13-java-seminar/">Провёл семинар по Java &raquo;</a>
+        
+    </div>
+
+    
+
+
+</div>
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div id="sidebar">
+                
+                <div id="recent">
+                    <h3>Recent Posts</h3>
+                    <ul>
+                        
+                        <li><a href="/posts-output/2019-11-10-test-classification/">Классификация тестов</a></li>
+                        
+                        <li><a href="/posts-output/2019-08-23-understanding-computation/">Understanding computation</a></li>
+                        
+                        <li><a href="/posts-output/2019-06-03-elements-of-programming/">Начала программирования</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-27-web-improved/">The HTML we shouldn&#39;t ever have</a></li>
+                        
+                        <li><a href="/posts-output/2019-03-23-on-interviews/">Про интервью</a></li>
+                        
+                        <li><a href="/posts-output/2019-02-27-fire-and-motion-2019/">Fire and motion 2019</a></li>
+                        
+                    </ul>
+                </div>
+                
+                
+                <div id="tags">
+                    <h3>Tags</h3>
+                    <div class="tag-block">
+                    
+                    <a href="/tags-output/books/">books</a>
+                    
+                    <a href="/tags-output/technology/">technology</a>
+                    
+                    <a href="/tags-output/scala/">scala</a>
+                    
+                    <a href="/tags-output/dsls/">dsls</a>
+                    
+                    <a href="/tags-output/development/">development</a>
+                    
+                    <a href="/tags-output/testing/">testing</a>
+                    
+                    <a href="/tags-output/clojure/">clojure</a>
+                    
+                    <a href="/tags-output/web/">web</a>
+                    
+                    <a href="/tags-output/vscode/">vscode</a>
+                    
+                    <a href="/tags-output/lift/">lift</a>
+                    
+                    <a href="/tags-output/conferences/">conferences</a>
+                    
+                    <a href="/tags-output/design/">design</a>
+                    
+                    <a href="/tags-output/process/">process</a>
+                    
+                    <a href="/tags-output/validation/">validation</a>
+                    
+                    <a href="/tags-output/TG repost/">TG repost</a>
+                    
+                    <a href="/tags-output/commons-logging/">commons-logging</a>
+                    
+                    <a href="/tags-output/java/">java</a>
+                    
+                    <a href="/tags-output/HR/">HR</a>
+                    
+                    <a href="/tags-output/scalaz/">scalaz</a>
+                    
+                    <a href="/tags-output/haskell/">haskell</a>
+                    
+                    <a href="/tags-output/racket/">racket</a>
+                    
+                    <a href="/tags-output/log4j/">log4j</a>
+                    
+                    <a href="/tags-output/task management/">task management</a>
+                    
+                    <a href="/tags-output/languages/">languages</a>
+                    
+                    <a href="/tags-output/programming/">programming</a>
+                    
+                    <a href="/tags-output/refactoring/">refactoring</a>
+                    
+                    <a href="/tags-output/jboss/">jboss</a>
+                    
+                    <a href="/tags-output/links/">links</a>
+                    
+                    <a href="/tags-output/git/">git</a>
+                    
+                    <a href="/tags-output/teaching/">teaching</a>
+                    
+                    <a href="/tags-output/planning/">planning</a>
+                    
+                    <a href="/tags-output/sublime/">sublime</a>
+                    
+                    <a href="/tags-output/communities/">communities</a>
+                    
+                    <a href="/tags-output/lisp/">lisp</a>
+                    
+                    <a href="/tags-output/error-handling/">error-handling</a>
+                    
+                    <a href="/tags-output/ide/">ide</a>
+                    
+                    <a href="/tags-output/exceptions/">exceptions</a>
+                    
+                    <a href="/tags-output/interviews/">interviews</a>
+                    
+                    <a href="/tags-output/test/">test</a>
+                    
+                    <a href="/tags-output/qa/">qa</a>
+                    
+                    <a href="/tags-output/thoughts/">thoughts</a>
+                    
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+    <footer>Copyright &copy; 2019 Alexey Zlobin
+        <p style="text-align: center;">Powered by <a href="http://cryogenweb.org">Cryogen</a></p></footer>
+</div>
+<script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/js/bootstrap.min.js"></script>
+<script src="/js/highlight.pack.js" type="text/javascript"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+</body>
+</html>
