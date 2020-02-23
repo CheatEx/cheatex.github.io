@@ -2,8 +2,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
     <meta charset="utf-8"/>
-    <title>cheatex: The HTML we shouldn&#39;t ever have</title>
-    <link rel="canonical" href="https://cheatex.cc/posts-output/2019-03-27-web-improved/">
+    <title>cheatex: Маленькие изменения</title>
+    <link rel="canonical" href="https://cheatex.cc/posts-output/2020-02-23-small-changes/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="//fonts.googleapis.com/css?family=Alegreya:400italic,700italic,400,700" rel="stylesheet"
           type="text/css">
@@ -49,24 +49,22 @@
 <div id="post">
     <div class="post-header">
     <div id="post-meta" class="row">
-        <div class="col-lg-6">March 27, 2019</div>
+        <div class="col-lg-6">February 23, 2020</div>
         
     </div>
-    <h2>The HTML we shouldn&#39;t ever have</h2>
+    <h2>Маленькие изменения</h2>
 </div>
 <div>
     
-    <p>Мне попался <a href='http://skch.net/view.php?page=articles&post=bhtml'>проект как сделать вэб лучше</a> и что-то мне кажется проработан он весьма поверхностно...</p><p>Для начала автор сетует что аттрибут <code>src</code> не был внедрён повсеместно, а только для <code>img</code>. В частности:</p><blockquote><p> Everyone was fascinated with the new features, and most likely the reason why no one had a wit to ask: why don’t we let all the other HTML elements also use this attribute?  <h1 src="/website/info/title"> </h1>  This code means that the browser must load the content of the heading from the provided URL. Maybe it doesn’t make much sense for such a small element, but what about a div or an article? </p></blockquote><p>Дальше больше, автор предлагает ввести подстановки в язык разметки, в духе</p><pre><code>&lt;div id=&quot;name&quot;&gt;George&lt;/div&gt;
-&lt;h1&gt;Welcome, $name&lt;/h1&gt;
-</code></pre><p>Дело тут какое. Во-первых src много где есть, например в <a href='https://www.owasp.org/index.php/Cross_Frame_Scripting'>полюбившемся всем</a> <code>iframe</code>. И кое-где он <a href='https://www.owasp.org/index.php/Clickjacking'>уже доставляет</a>.</p><p>Во-вторых давайте почитаем что говорит один из авторов современного web про проблемы которые он пытался решить.</p><p>Что требовалось от HTML и где он не справился:</p><blockquote><p> HTML is an example of a media type that, for the most part, has good latency  characteristics. Information within early HTML could be rendered as it was received... </p><p> However, there are aspects of HTML that were not designed well for latency. Examples include: ...;<br /> embedded images without rendering size hints, requiring that the first few bytes of the image<br /> (the part that contains the layout size) be received before the rest of the surrounding HTML<br /> can be displayed; dynamically sized table columns, requiring that the renderer read<br /> and determine sizes for the entire table before it can start displaying the top; ... </p></blockquote><p>В моём понимании рац. предложение из поста - сразу два шага назад. Первый - больше запросов на страницу, второй - еще больше компонентов которые не могут рисоваться до полной загрузки.</p><p>Теперь немного оценки <code>src</code> в контексте <code>iframe</code>.</p><blockquote><p> ... The introduction of “frames” to the Hypertext Markup Language (HTML) caused  similar confusion. Frames allow a browser window to be partitioned into subwindows,  each with its own navigational state. Link selections within a subwindow are  indistinguishable from normal transitions, but the resulting response representation is  rendered within the subwindow instead of the full browser application workspace. This is  fine provided that no link exits the realm of information that is intended for subwindow  treatment, but when it does occur the user finds themself viewing one application wedged  within the subcontext of another application. </p></blockquote><p>Здесь нельзя указать на очевидную деградацию, own navigational state вроде не предлагается. Но предлагается использовать в src переменные с не совсем понятной областью видимости персистентностью. Ограничения на куда <code>src</code> ходит типа тоже не нужны?</p><p>Ничего не сказано о том как читать/писать/переопределять стили и новые $-переменные в подгруженных из src элементах. Без модели каскадирования - это просто размахивание руками. Проблему с ней ведь и пытаемся решить, не?</p>
+    <p>По моему опыту лучший способ ускорить написание софта - это делить процесс на маленькие этапы. Я не про итерации 1 или 2 недели. Я про выкатывать коммит раз в полчаса. Вот прям нормальный, с тестами, доками, чтоб ничё не отваливалось.</p><p>Почти все подвижки с конца 90х они про то как дать возможность сделать законченное изменение за минимальное время. Все эти CD, TDD, BDD, microservices, serverless видятся мне как инструменты для уменьшения гранулярности изменений. Фидбэк от пользователей, корректировка сроков и ожиданий, "чистая" архитектура - это кул-сторисы для среднего менеджмента. Коммит раз в несколько десятков минут - вот реальный бенефит.</p><p>Маленькие изменения позволяют понять что ты куда-то двинулся а не топчешься на месте или гребёшь назад, превращая работающий код в фарш. С пачкой законченных коммитов можно делать много полезный вещей: пофильтровать, перемешать, перенести из одного релиза в другой. Быстро.</p><p>Отдельная история - это слияние и перенос веток. Между merge двух веток по 1000 изменений и rebase 10 коммитов по 100 на ветку с 1000 есть большая разница. Особенно если знаешь что в каждом коммите релевантные тесты добавлены и старые не сломаны. По моему опыту разница легко может быть в 3-4 раза.</p><p>Да, оно конечно не всегда возможно. Если есть API с двумя сотнями вызовов то хочешь не хочешь пару часов провозишься. Но подавляющее большинство продуктовых изменения можно нарезать на дифы в сотню строк получаемые за полчаса работы.</p>
 </div>
 
 <div id="post-tags">
     <b>Tags: </b>
     
-    <a href="/tags-output/web/">web</a>
+    <a href="/tags-output/process/">process</a>
     
-    <a href="/tags-output/TG repost/">TG repost</a>
+    <a href="/tags-output/programming/">programming</a>
     
     <a href="/tags-output/thoughts/">thoughts</a>
     
@@ -75,10 +73,8 @@
 
     <div id="prev-next">
         
-        <a href="/posts-output/2019-06-03-elements-of-programming/">&laquo; Начала программирования</a>
         
-        
-        <a class="right" href="/posts-output/2019-03-23-on-interviews/">Про интервью &raquo;</a>
+        <a class="right" href="/posts-output/2019-11-10-test-classification/">Классификация тестов &raquo;</a>
         
     </div>
 
